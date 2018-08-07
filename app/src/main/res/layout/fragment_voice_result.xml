@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:text="您输入的语音结果为："
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="#C0C0C0" />
+
+    <EditText
+        android:id="@+id/et_voice_result"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:hint="您没有输入的语音结果。"/>
+
+    <Button
+        android:id="@+id/bt_voice_result_add_stuff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#2EBD61"
+        android:padding="5dp"
+        android:text="添加材料"
+        android:textColor="@android:color/white" />
+</LinearLayout>

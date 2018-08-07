@@ -1,0 +1,13 @@
+<litepal>
+    <dbname value="GTD"/>
+    <version value="1"/>
+    <list>
+        <mapping class="com.ljh.gtd3.data.entity.Affair"/>
+        <mapping class="com.ljh.gtd3.data.entity.List"/>
+        <mapping class="com.ljh.gtd3.data.entity.ListGroup"/>
+        <mapping class="com.ljh.gtd3.data.entity.Notification"/>
+        <mapping class="com.ljh.gtd3.data.entity.Stuff"/>
+        <mapping class="com.ljh.gtd3.data.entity.User"/>
+        <mapping class="com.ljh.gtd3.data.entity.Operation"/>
+    </list>
+</litepal>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/calendar_navigation_menu_item"
+        android:icon="@mipmap/time"
+        android:title="日历"/>
+    <item
+        android:id="@+id/allStuff_navigation_menu_item"
+        android:icon="@mipmap/createtask"
+        android:title="所有材料" />
+    <item
+        android:id="@+id/listGroup_navigation_menu_item"
+        android:icon="@mipmap/manage"
+        android:title="文件夹" />
+    <item
+        android:id="@+id/notifications_navigation_menu_item"
+        android:icon="@mipmap/message"
+        android:title="通知" />
+</menu>
