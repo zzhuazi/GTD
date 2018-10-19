@@ -36,6 +36,7 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     private void createDefaultListAndTask() {
+        //测试分支是否可靠
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List defaultList = new List();
         defaultList.setId(1);
