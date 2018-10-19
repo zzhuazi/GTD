@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.ljh.gtd3.R;
 import com.ljh.gtd3.service.NotifyService;
-import com.ljh.gtd3.stuffDetail.StuffDetailActivity;
+import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 
 /**
  * 设置通知
@@ -31,7 +31,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("NOTIFICATION")) {
             NotificationManager manager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
             //通知点击事件->跳转到stuffDetailActivity.class
-            Intent toStuffDetailActivityIntent = new Intent(context, StuffDetailActivity.class);
+            Intent toStuffDetailActivityIntent = new Intent(context, TaskDetailActivity.class);
             toStuffDetailActivityIntent.putExtra("STUFFID", stuffId);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, toStuffDetailActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

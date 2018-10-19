@@ -20,20 +20,13 @@ public interface ListsDataSource {
         void onListFail(String message);
     }
 
-    interface SendRequestCallBack{
-        void onRequestSuccess(String message);
-        void onRequestFail(String message);
-    }
+    void GetList(@NonNull int listId, @NonNull GetListCallBack callBack);
 
-    void GetList(@NonNull String listId, @NonNull GetListCallBack callBack);
+    void GetLists(@NonNull GetListsCallBack callBack);
 
-    void GetLists(@NonNull String userId, @NonNull GetListsCallBack callBack);
+    void deleteList(@NonNull int listId);
 
-    void GetListsByListGroupId(@NonNull String userId, @NonNull String listGroupId, @NonNull GetListsCallBack callBack);
-
-    void deleteList(@NonNull String listId, @NonNull SendRequestCallBack callBack);
-
-    void deleteLists(@NonNull String userId, @NonNull SendRequestCallBack callBack);
+    void deleteAllLists();
 
     void updateList(@NonNull List list);  //没有回调，直接在ui中修改
 

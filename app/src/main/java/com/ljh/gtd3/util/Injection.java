@@ -19,12 +19,8 @@ package com.ljh.gtd3.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.ljh.gtd3.data.StuffsSource.StuffsLocalDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsRepository;
-import com.ljh.gtd3.data.StuffsSource.remote.StuffsRemoteDataSource;
-import com.ljh.gtd3.data.UsersSource.UsersLocalDataSource;
-import com.ljh.gtd3.data.UsersSource.UsersRepository;
-import com.ljh.gtd3.data.UsersSource.remote.UsersRemoteDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksRepository;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
@@ -34,16 +30,16 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
  * a fake instance of the class to isolate the dependencies and run a test hermetically.
  */
 public class Injection {
-
-    public static UsersRepository provideUsersRepository(@NonNull Context context) {
-        checkNotNull(context);
-        AppExecutors appExecutors = new AppExecutors();
-        return UsersRepository.getInstance(UsersLocalDataSource.getInstance(appExecutors), UsersRemoteDataSource.getInstance(appExecutors),appExecutors);
-    }
-
-    public static StuffsRepository provideStuffRepository(@NonNull Context context) {
-        checkNotNull(context);
-        AppExecutors appExecutors = new AppExecutors();
-        return StuffsRepository.getInstance(StuffsLocalDataSource.getInstance(appExecutors), StuffsRemoteDataSource.getInstance(appExecutors));
-    }
+//
+//    public static UsersRepository provideUsersRepository(@NonNull Context context) {
+//        checkNotNull(context);
+//        AppExecutors appExecutors = new AppExecutors();
+//        return UsersRepository.getInstance(UsersLocalDataSource.getInstance(appExecutors), UsersRemoteDataSource.getInstance(appExecutors),appExecutors);
+//    }
+//
+//    public static TasksRepository provideStuffRepository(@NonNull Context context) {
+//        checkNotNull(context);
+//        AppExecutors appExecutors = new AppExecutors();
+//        return TasksRepository.getInstance(TasksLocalDataSource.getInstance(appExecutors), StuffsRemoteDataSource.getInstance(appExecutors));
+//    }
 }

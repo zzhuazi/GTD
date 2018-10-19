@@ -1,6 +1,5 @@
 package com.ljh.gtd3.data.UsersSource;
 
-import com.ljh.gtd3.data.entity.User;
 import com.ljh.gtd3.util.SingleExecutors;
 
 import org.junit.After;

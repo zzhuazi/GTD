@@ -2,7 +2,6 @@ package com.ljh.gtd3.voiceResult;
 
 import com.ljh.gtd3.BasePresenter;
 import com.ljh.gtd3.BaseView;
-import com.ljh.gtd3.data.entity.Stuff;
 
 public interface VoiceResultContract {
     interface View extends BaseView<Presenter>{

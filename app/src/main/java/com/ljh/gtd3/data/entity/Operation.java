@@ -1,17 +1,18 @@
 package com.ljh.gtd3.data.entity;
 
-import org.litepal.crud.DataSupport;
 
-public class Operation extends DataSupport {
+import org.litepal.crud.LitePalSupport;
 
-    private String operationId;
+public class Operation extends LitePalSupport {
+
+    private int operationId;
     private String name;
 
-    public String getId() {
+    public int getId() {
         return operationId;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.operationId = id;
     }
 

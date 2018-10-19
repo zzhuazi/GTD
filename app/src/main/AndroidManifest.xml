@@ -44,7 +44,7 @@
             android:name=".login.LoginActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".allStuff.AllStuffActivity"
+            android:name=".allTask.AllTasksActivity"
             android:launchMode="singleTop" />
         <activity
             android:name=".register.RegisterActivity"
@@ -56,10 +56,10 @@
             android:name=".notification.NotificationActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".addStuff.AddStuffActivity"
+            android:name=".addTask.AddTaskActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".stuffDetail.StuffDetailActivity"
+            android:name=".taskDetail.TaskDetailActivity"
             android:launchMode="singleTop" />
         <activity
             android:name=".listDetail.ListDetailActicity"
@@ -76,7 +76,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".stuffDate.StuffDateActivity" />
+        <activity android:name=".taskDate.TaskDateActivity" />
         <activity android:name=".calendar.CalendarActivity" />
         <activity android:name=".user.UserActivity" />
 

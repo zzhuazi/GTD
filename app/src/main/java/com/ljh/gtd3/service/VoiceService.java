@@ -21,7 +21,7 @@ public class VoiceService extends Service {
         String userId = intent.getStringExtra("USERID");
         String result = intent.getStringExtra("RESULT");
         VoiceController controller = new VoiceController();
-        controller.start(getBaseContext(), userId, result);
+        controller.start(getBaseContext(), result);
 //        Intent intent1 = new Intent(getBaseContext(), TestActivity.class);
 //        intent1.setFlags(FLAG_ACTIVITY_NEW_TASK);
 //        intent1.putExtra("RESULT",result);

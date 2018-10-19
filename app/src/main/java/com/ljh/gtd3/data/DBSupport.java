@@ -1,6 +1,7 @@
 package com.ljh.gtd3.data;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.LitePal;
+import org.litepal.crud.LitePalSupport;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -9,9 +10,10 @@ import java.util.List;
 
 /**
  * Created by Administrator on 2018/3/12.
+ * 修改litepal的find and save操作
  */
 
-public abstract class DBSupport<T  extends DBSupport> extends DataSupport {
+public abstract class DBSupport<T  extends DBSupport> extends LitePalSupport {
 
     protected long id;
 
@@ -40,7 +42,7 @@ public abstract class DBSupport<T  extends DBSupport> extends DataSupport {
             if (pkValue.isEmpty()) {
                 return null;
             }
-            List<T> list = where(pk.getName() + " = ?", pkValue).find(clazz);
+            List<T> list = LitePal.where(pk.getName() + " = ?", pkValue).find(clazz);
             if (list == null || list.size() == 0) {
                 return null;
             } else if (list.size() > 1) {

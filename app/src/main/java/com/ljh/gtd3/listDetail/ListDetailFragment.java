@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,14 +33,12 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.sunflower.FlowerCollector;
 import com.ljh.gtd3.R;
 import com.ljh.gtd3.addList.AddListActivity;
-import com.ljh.gtd3.addStuff.AddStuffActivity;
-import com.ljh.gtd3.allStuff.StuffsAdapter;
+import com.ljh.gtd3.addTask.AddTaskActivity;
+import com.ljh.gtd3.allTask.TasksAdapter;
 import com.ljh.gtd3.data.entity.List;
-import com.ljh.gtd3.data.entity.Stuff;
-import com.ljh.gtd3.data.entity.User;
+import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.service.VoiceService;
-import com.ljh.gtd3.stuffDetail.StuffDetailActivity;
-import com.ljh.gtd3.user.UserActivity;
+import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 import com.ljh.gtd3.util.IatSettings;
 import com.ljh.gtd3.util.XunfeiJsonParser;
 
@@ -62,14 +59,10 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     private ListDetailContract.Presenter mPresenter;
 
     private RecyclerView mRecyclerView;
-    private StuffsAdapter mStuffsAdapter;
+    private TasksAdapter mTasksAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private View mNoStuffsView;
+    private View mNoTasksView;
     private TextView mListNameTv;
-
-    private RelativeLayout mUserSettingRv;
-    private TextView mUserName;
-    private TextView mUserEmail;
 
     //语音听写对象
     private SpeechRecognizer mIat;
@@ -84,7 +77,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     private SharedPreferences mSharedPreferences;
 
     private List mList;
-    private java.util.List<Stuff> mStuffs;
+    private java.util.List<Task> mTasks;
 
     public static ListDetailFragment newInstance() {
         ListDetailFragment fragment = new ListDetailFragment();
@@ -105,15 +98,6 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         View headView = navigationView.inflateHeaderView(R.layout.nav_header);
-        mUserSettingRv = headView.findViewById(R.id.rv_user_setting);
-        mUserEmail = headView.findViewById(R.id.email);
-        mUserName = headView.findViewById(R.id.username);
-        mUserSettingRv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.showUserSetting();
-            }
-        });
 
         mListNameTv = getActivity().findViewById(R.id.tv_list_detail_list_name);
         mListNameTv.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +105,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
             public void onClick(View view) {
                 try{
                     Intent intent = new Intent(getContext(), AddListActivity.class);
-                    intent.putExtra("LISTID",mList.getListId());
+                    intent.putExtra("LISTID",mList.getId());
                     startActivity(intent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -131,18 +115,18 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.rv_list_detail);
         mRecyclerView.setLayoutManager(layoutManager);
-        mNoStuffsView = root.findViewById(R.id.noStuffs);
+        mNoTasksView = root.findViewById(R.id.noTasks);
         // Set up floating action button
         FloatingActionButton fab =
-                (FloatingActionButton) getActivity().findViewById(R.id.fab_add_stuff);
+                (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
 
 //        fab.setImageResource(R.drawable.ic_add);
-        //悬浮按钮的点击事件：跳转到添加stuff页面
+        //悬浮按钮的点击事件：跳转到添加Task页面
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try{
-                    mPresenter.showAddStuff();
+                    mPresenter.showAddTask();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -189,14 +173,14 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
             }
         });
 
-        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_stuff);
+        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_Task);
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 try{
-                    mPresenter.loadStuffs(true);
+                    mPresenter.loadTasks(true);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -228,24 +212,24 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     }
 
     @Override
-    public void setLoadingStuffsError() {
+    public void setLoadingTasksError() {
         showToast("加载材料错误！");
     }
 
     @Override
-    public void showAllStuffs(List list, java.util.List<Stuff> stuffs) {
+    public void showAllTasks(List list, java.util.List<Task> tasks) {
         try{
             mList = list;
-            mStuffs = stuffs;
-            mStuffsAdapter = new StuffsAdapter(mStuffs);
-            mStuffsAdapter.setOnItemClickListener(new StuffsAdapter.StuffItemListener() {
+            mTasks = tasks;
+            mTasksAdapter = new TasksAdapter(mTasks);
+            mTasksAdapter.setOnItemClickListener(new TasksAdapter.TaskItemListener() {
                 @Override
-                public void onStuffClick(View view, final int pos) {
+                public void onTaskItemClick(View view, final int pos) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try{
-                                mPresenter.showStuffDetail(mStuffs.get(pos));
+                                mPresenter.showTaskDetail(mTasks.get(pos));
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -254,14 +238,14 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                 }
 
                 @Override
-                public void onCompleteStuffClick(View view, final int pos) {
+                public void onCompleteTaskClick(View view, final int pos) {
                     try{
-                        mPresenter.completeStuff(mStuffs.get(pos));
+                        mPresenter.completeTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mStuffs.get(pos).setFinished(true);
-                                mStuffsAdapter.notifyDataSetChanged();
+                                mTasks.get(pos).setFinished(true);
+                                mTasksAdapter.notifyDataSetChanged();
                             }
                         });
                     }catch (Exception e){
@@ -270,14 +254,14 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                 }
 
                 @Override
-                public void onActivateStuffClick(View view, final int pos) {
+                public void onActivateTaskClick(View view, final int pos) {
                     try{
-                        mPresenter.activateStuff(mStuffs.get(pos));
+                        mPresenter.activateTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mStuffs.get(pos).setFinished(false);
-                                mStuffsAdapter.notifyDataSetChanged();
+                                mTasks.get(pos).setFinished(false);
+                                mTasksAdapter.notifyDataSetChanged();
                             }
                         });
                     }catch (Exception e){
@@ -286,7 +270,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                 }
 
                 @Override
-                public void onItemLongClick(View view, final int pos) {
+                public void onTaskItemLongClick(View view, final int pos) {
                     try{
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -296,9 +280,9 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                                         .setPositiveButton("删除", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                mPresenter.deleteStuff(mStuffs.get(pos));
-                                                mStuffs.remove(pos);
-                                                mStuffsAdapter.notifyDataSetChanged();
+                                                mPresenter.deleteTask(mTasks.get(pos));
+                                                mTasks.remove(pos);
+                                                mTasksAdapter.notifyDataSetChanged();
                                                 dialogInterface.dismiss();
                                             }
                                         });
@@ -314,9 +298,9 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                 @Override
                 public void run() {
                     mListNameTv.setText(mList.getName());
-                    mRecyclerView.setAdapter(mStuffsAdapter);
+                    mRecyclerView.setAdapter(mTasksAdapter);
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mNoStuffsView.setVisibility(View.GONE);
+                    mNoTasksView.setVisibility(View.GONE);
                 }
             });
         }catch (Exception e){
@@ -325,10 +309,10 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     }
 
     @Override
-    public void showAddStuff(Map<String, String> map) {
+    public void showAddTask(Map<String, String> map) {
         try {
-            Intent intent = new Intent(getContext(), AddStuffActivity.class);
-            intent.putExtra("STUFFNAME", map.get("STUFFNAME"));
+            Intent intent = new Intent(getContext(), AddTaskActivity.class);
+            intent.putExtra("TaskNAME", map.get("TaskNAME"));
             startActivity(intent);
             getActivity().finish();
         }catch (Exception e){
@@ -337,10 +321,10 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     }
 
     @Override
-    public void showStuffDetail(String stuffId) {
+    public void showTaskDetail(int TaskId) {
         try{
-            Intent intent = new Intent(getContext(), StuffDetailActivity.class);
-            intent.putExtra("STUFFID", stuffId);
+            Intent intent = new Intent(getContext(), TaskDetailActivity.class);
+            intent.putExtra("TASKID", TaskId);
             startActivity(intent);
         }catch (Exception e){
             e.printStackTrace();
@@ -348,13 +332,13 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     }
 
     @Override
-    public void showNoStuffs() {
+    public void showNoTasks() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setLoadingIndicator(false);
                 mRecyclerView.setVisibility(View.GONE);
-                mNoStuffsView.setVisibility(View.VISIBLE);
+                mNoTasksView.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -374,24 +358,13 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
         });
     }
 
-    @Override
-    public void showUserSetting() {
-        Intent intent = new Intent(getContext(), UserActivity.class);
-        startActivity(intent);
-    }
+
 
     @Override
-    public void startVoiceService(String userId, String result) {
+    public void startVoiceService(String result) {
         Intent intent = new Intent(getContext(), VoiceService.class);
-        intent.putExtra("USERID", userId);
         intent.putExtra("RESULT", result);
         getContext().startService(intent);
-    }
-
-    @Override
-    public void loadUser(User user) {
-        mUserEmail.setText(user.getEmail());
-        mUserName.setText(user.getName());
     }
 
     //**********************语音部分*********************

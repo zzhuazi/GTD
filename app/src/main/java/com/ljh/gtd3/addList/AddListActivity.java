@@ -13,16 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.allStuff.AllStuffActivity;
+import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
-import com.ljh.gtd3.data.ListGroupsSource.ListGroupsLocalDataSource;
-import com.ljh.gtd3.data.ListGroupsSource.ListGroupsRepository;
-import com.ljh.gtd3.data.ListGroupsSource.remote.ListGroupsRemoteDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
-import com.ljh.gtd3.data.ListsSource.remote.ListsRemoteDataSource;
-import com.ljh.gtd3.listGroup.ListGroupActivity;
-import com.ljh.gtd3.notification.NotificationActivity;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 import com.ljh.gtd3.util.MyApplication;
@@ -37,7 +31,7 @@ public class AddListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
 
-        // Set up the toolbar.
+        // Set up the toolbar_add_task.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -57,15 +51,12 @@ public class AddListActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), addListFragment, R.id.contentFrame);
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-        String userId = sharedPreferences.getString("USERID", null);
-        String listid = getIntent().getStringExtra("LISTID");
+        Integer listid = getIntent().getIntExtra("LISTID",0);
         AppExecutors appExecutors = new AppExecutors();
         //presenter
         mAddListPresenter = new AddListPresenter(
-                ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors), ListsRemoteDataSource.getInstance(appExecutors)),
-                ListGroupsRepository.getInstance(ListGroupsLocalDataSource.getInstance(appExecutors), ListGroupsRemoteDataSource.getInstance(appExecutors)),
-                addListFragment,userId, listid);
+                ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors)),
+                addListFragment, listid);
     }
 
     @Override
@@ -88,17 +79,17 @@ public class AddListActivity extends AppCompatActivity {
                         startActivity(intent3);
                         break;
                     case R.id.allStuff_navigation_menu_item:
-                        Intent intent2 = new Intent(AddListActivity.this, AllStuffActivity.class);
+                        Intent intent2 = new Intent(AddListActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.listGroup_navigation_menu_item:
-                        Intent intent = new Intent(AddListActivity.this, ListGroupActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.notifications_navigation_menu_item:
-                        Intent intent1 = new Intent(AddListActivity.this, NotificationActivity.class);
-                        startActivity(intent1);
-                        break;
+//                    case R.id.listGroup_navigation_menu_item:
+//                        Intent intent = new Intent(AddListActivity.this, ListGroupActivity.class);
+//                        startActivity(intent);
+//                        break;
+//                    case R.id.notifications_navigation_menu_item:
+//                        Intent intent1 = new Intent(AddListActivity.this, NotificationActivity.class);
+//                        startActivity(intent1);
+//                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();

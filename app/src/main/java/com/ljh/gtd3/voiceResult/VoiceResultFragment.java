@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.allStuff.AllStuffActivity;
+import com.ljh.gtd3.allTask.AllTasksActivity;
 
 public class VoiceResultFragment extends Fragment implements VoiceResultContract.View {
     private VoiceResultContract.Presenter mPresenter;
@@ -49,7 +49,7 @@ public class VoiceResultFragment extends Fragment implements VoiceResultContract
     @Override
     public void toAllStuffActivity() {
         try{
-            Intent intent = new Intent(getContext(), AllStuffActivity.class);
+            Intent intent = new Intent(getContext(), AllTasksActivity.class);
             startActivity(intent);
         }catch (Exception e){
             e.printStackTrace();

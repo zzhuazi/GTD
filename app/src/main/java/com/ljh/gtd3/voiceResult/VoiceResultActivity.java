@@ -9,9 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.data.StuffsSource.StuffsLocalDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsRepository;
-import com.ljh.gtd3.data.StuffsSource.remote.StuffsRemoteDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 import com.ljh.gtd3.util.MyApplication;
@@ -23,7 +22,7 @@ public class VoiceResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_result);
-        // Set up the toolbar.
+        // Set up the toolbar_add_task.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -40,12 +39,12 @@ public class VoiceResultActivity extends AppCompatActivity {
         String defaultListId = sharedPreferences.getString("DEFAULTLISTID", null);
         AppExecutors appExecutors = new AppExecutors();
 
-        mVoiceResultPresenter = new VoiceResultPresenter(
-                StuffsRepository.getInstance(StuffsLocalDataSource.getInstance(appExecutors), StuffsRemoteDataSource.getInstance(appExecutors)),
-                userId,
-                defaultListId,
-                voiceResultFragment
-        );
+//        mVoiceResultPresenter = new VoiceResultPresenter(
+//                TasksRepository.getInstance(TasksLocalDataSource.getInstance(appExecutors), StuffsRemoteDataSource.getInstance(appExecutors)),
+//                userId,
+//                defaultListId,
+//                voiceResultFragment
+//        );
     }
 
     @Override

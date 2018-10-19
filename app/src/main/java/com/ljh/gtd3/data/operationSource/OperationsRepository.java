@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.ljh.gtd3.data.entity.Operation;
 import com.ljh.gtd3.util.AppExecutors;
 
-import org.litepal.crud.DataSupport;
+import org.litepal.LitePal;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class OperationsRepository implements OperationDataSource{
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                List<Operation> operations = DataSupport.findAll(Operation.class);
+                List<Operation> operations = LitePal.findAll(Operation.class);
                 if(operations.isEmpty()) {
                     callBack.onOperationsFail("没有操作命令词");
                 }else {
@@ -49,7 +49,7 @@ public class OperationsRepository implements OperationDataSource{
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                DataSupport.saveAll(operations);
+                LitePal.saveAll(operations);
             }
         };
         mAppExecutors.diskIO().execute(runnable);

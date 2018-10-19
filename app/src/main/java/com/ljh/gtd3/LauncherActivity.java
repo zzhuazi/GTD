@@ -2,25 +2,19 @@ package com.ljh.gtd3;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.ljh.gtd3.allStuff.AllStuffActivity;
-import com.ljh.gtd3.login.LoginActivity;
+import com.ljh.gtd3.allTask.AllTasksActivity;
+import com.ljh.gtd3.data.entity.List;
+import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.service.AddOperationWordService;
 import com.ljh.gtd3.service.NotifyService;
-import com.ljh.gtd3.util.HttpUtil;
 import com.ljh.gtd3.util.MyApplication;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LauncherActivity extends AppCompatActivity {
 
@@ -33,57 +27,45 @@ public class LauncherActivity extends AppCompatActivity {
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
         boolean firstOpen = sharedPreferences.getBoolean("FIRSTOPEN", true);
         if (firstOpen) {
+            createDefaultListAndTask();
             sharedPreferences.edit().putBoolean("FIRSTOPEN", false).apply();
             Intent intent = new Intent(this, AddOperationWordService.class);
             startService(intent);
         }
-        IsNetWorkTask isNetWorkTask = new IsNetWorkTask();
-        isNetWorkTask.execute();
-        String userId = sharedPreferences.getString("USERID", null);
-        if (userId != null) {
-            startAllStuffActivity(userId);
-        } else {
-            startLoginActivity();
-        }
+        startAllStuffActivity();
     }
 
-    private void startLoginActivity() {
-        Intent intent = new Intent(LauncherActivity.this, LoginActivity.class);
-        startActivity(intent);
-        this.finish();
+    private void createDefaultListAndTask() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List defaultList = new List();
+        defaultList.setId(1);
+        defaultList.setName("收集箱");
+        defaultList.setTasks(1);
+        defaultList.setPriority(0);
+        defaultList.setGmtCreate(simpleDateFormat.format(new Date()));
+        defaultList.setGmtModified(simpleDateFormat.format(new Date()));
+        defaultList.save();
+        //创建初始的任务
+        Task task = new Task();
+        task.setId(1);
+        task.setName("欢迎使用GTD软件");
+        task.setFinished(false);
+        task.setPriority(0);
+        task.setStartTime(simpleDateFormat.format(new Date()));
+        task.setGmtCreate(simpleDateFormat.format(new Date()));
+        task.setGmtModified(simpleDateFormat.format(new Date()));
+        task.setList(defaultList);
+        task.save();
     }
 
-    private void startAllStuffActivity(String userId) {
-        Log.d(TAG, "startAllStuffActivity: " + userId);
+
+    private void startAllStuffActivity() {
         //开启通知
         Intent startServiceIntent = new Intent(this, NotifyService.class);
-        startServiceIntent.putExtra("USERID", userId);
         startService(startServiceIntent);
-        Intent intent = new Intent(LauncherActivity.this, AllStuffActivity.class);
+        //跳转到所有任务列表
+        Intent intent = new Intent(LauncherActivity.this, AllTasksActivity.class);
         startActivity(intent);
         this.finish();
-    }
-
-    class IsNetWorkTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-            String address = "http://192.168.253.1:8080/netWork";
-            HttpUtil.sendOkHttpGetRequest(address, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.d(TAG, "onFailure: network fail");
-                    sharedPreferences.edit().putBoolean("NETWORK", false).apply();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    Log.d(TAG, "onResponse: network success");
-                    sharedPreferences.edit().putBoolean("NETWORK", true).apply();
-                }
-            });
-            return null;
-        }
     }
 }

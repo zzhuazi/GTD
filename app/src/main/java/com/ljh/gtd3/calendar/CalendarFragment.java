@@ -14,8 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,13 +34,11 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.sunflower.FlowerCollector;
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.addStuff.AddStuffActivity;
-import com.ljh.gtd3.allStuff.StuffsAdapter;
-import com.ljh.gtd3.data.entity.Stuff;
-import com.ljh.gtd3.data.entity.User;
+import com.ljh.gtd3.addTask.AddTaskActivity;
+import com.ljh.gtd3.allTask.TasksAdapter;
+import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.service.VoiceService;
-import com.ljh.gtd3.stuffDetail.StuffDetailActivity;
-import com.ljh.gtd3.user.UserActivity;
+import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 import com.ljh.gtd3.util.IatSettings;
 import com.ljh.gtd3.util.XunfeiJsonParser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -62,8 +58,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.internal.Internal;
-
 /**
  * Created by Administrator on 2018/3/29.
  */
@@ -73,13 +67,10 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     private CalendarContract.Presenter mPresenter;
     private MaterialCalendarView mMaterialCalendarView;
     private RecyclerView mRecyclerView;
-    private StuffsAdapter mStuffsAdapter;
-    private View mNoStuffsView;
-    private TextView mStuffStartDate;
-
-    private RelativeLayout mUserSettingRv;
-    private TextView mUserName;
-    private TextView mUserEmail;
+    private TasksAdapter mTasksAdapter;
+    private View mNoTasksView;
+    private TextView mTaskStartDate;
+    
 
     //语音听写对象
     private SpeechRecognizer mIat;
@@ -92,7 +83,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     private boolean mTranslateEnable = false;
     private SharedPreferences mSharedPreferences;
 
-    private List<Stuff> mStuffs = new ArrayList<>();
+    private List<Task> mTasks = new ArrayList<>();
 
     public static CalendarFragment newInstance() {
         CalendarFragment fragment = new CalendarFragment();
@@ -113,20 +104,8 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         View headView = navigationView.inflateHeaderView(R.layout.nav_header);
-        mUserSettingRv = headView.findViewById(R.id.rv_user_setting);
-        mUserEmail = headView.findViewById(R.id.email);
-        mUserName = headView.findViewById(R.id.username);
-        mUserSettingRv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    mPresenter.showUserSetting();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        mStuffStartDate = getActivity().findViewById(R.id.title_text);
+       
+        mTaskStartDate = getActivity().findViewById(R.id.title_text);
         mMaterialCalendarView = root.findViewById(R.id.mcv_calendar);
         mMaterialCalendarView.state().edit()
                 //设置周一为第一天
@@ -142,11 +121,11 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                     @Override
                     public void run() {
                         try {
-                            mStuffs.clear();
+                            mTasks.clear();
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             Log.d(TAG, "onDateSelected: " + simpleDateFormat.format(date.getDate()));
-                            mPresenter.loadStuffs(simpleDateFormat.format(date.getDate()));
-                            showAllStuffs(mStuffs);
+                            mPresenter.loadTasks(simpleDateFormat.format(date.getDate()));
+                            showAllTasks(mTasks);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -157,18 +136,18 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.rv_calender);
         mRecyclerView.setLayoutManager(layoutManager);
-        mNoStuffsView = root.findViewById(R.id.noStuffs);
+        mNoTasksView = root.findViewById(R.id.noTasks);
         // Set up floating action button
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_stuff);
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
 
 //        fab.setImageResource(R.drawable.ic_add);
-        //悬浮按钮的点击事件：跳转到添加stuff页面
+        //悬浮按钮的点击事件：跳转到添加Task页面
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: add");
                 try {
-                    mPresenter.showAddStuff();
+                    mPresenter.showAddTask();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -226,23 +205,23 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     }
 
     @Override
-    public void setLoadingStuffsError() {
+    public void setLoadingTasksError() {
         showToast("加载材料异常");
     }
 
     @Override
-    public void showAllStuffs(List<Stuff> stuffs) {
+    public void showAllTasks(List<Task> tasks) {
         try {
-            mStuffs = stuffs;
-            mStuffsAdapter = new StuffsAdapter(mStuffs);
-            mStuffsAdapter.setOnItemClickListener(new StuffsAdapter.StuffItemListener() {
+            mTasks = tasks;
+            mTasksAdapter = new TasksAdapter(mTasks);
+            mTasksAdapter.setOnItemClickListener(new TasksAdapter.TaskItemListener() {
                 @Override
-                public void onStuffClick(View view, final int pos) {
+                public void onTaskItemClick(View view, final int pos) {
                     try{
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mPresenter.showStuffDetail(mStuffs.get(pos));
+                                mPresenter.showTaskDetail(mTasks.get(pos));
                             }
                         });
                     }catch (Exception e){
@@ -251,14 +230,14 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                 }
 
                 @Override
-                public void onCompleteStuffClick(View view, final int pos) {
+                public void onCompleteTaskClick(View view, final int pos) {
                     try{
-                        mPresenter.completeStuff(mStuffs.get(pos));
+                        mPresenter.completeTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mStuffs.get(pos).setFinished(true);
-                                mStuffsAdapter.notifyDataSetChanged();
+                                mTasks.get(pos).setFinished(true);
+                                mTasksAdapter.notifyDataSetChanged();
                             }
                         });
                     }catch (Exception e){
@@ -267,14 +246,14 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                 }
 
                 @Override
-                public void onActivateStuffClick(View view, final int pos) {
+                public void onActivateTaskClick(View view, final int pos) {
                     try{
-                        mPresenter.activateStuff(mStuffs.get(pos));
+                        mPresenter.activateTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mStuffs.get(pos).setFinished(false);
-                                mStuffsAdapter.notifyDataSetChanged();
+                                mTasks.get(pos).setFinished(false);
+                                mTasksAdapter.notifyDataSetChanged();
                             }
                         });
                     }catch (Exception e){
@@ -283,7 +262,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                 }
 
                 @Override
-                public void onItemLongClick(View view, final int pos) {
+                public void onTaskItemLongClick(View view, final int pos) {
                     try{
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -293,9 +272,9 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                                         .setPositiveButton("删除", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                mPresenter.deleteStuff(mStuffs.get(pos));
-                                                mStuffs.remove(pos);
-                                                mStuffsAdapter.notifyDataSetChanged();
+                                                mPresenter.deleteTask(mTasks.get(pos));
+                                                mTasks.remove(pos);
+                                                mTasksAdapter.notifyDataSetChanged();
                                                 dialogInterface.dismiss();
                                             }
                                         });
@@ -311,9 +290,9 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mRecyclerView.setAdapter(mStuffsAdapter);
+                    mRecyclerView.setAdapter(mTasksAdapter);
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mNoStuffsView.setVisibility(View.GONE);
+                    mNoTasksView.setVisibility(View.GONE);
                 }
             });
         } catch (Exception e) {
@@ -322,28 +301,28 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     }
 
     @Override
-    public void showAddStuff(Map<String, String> map) {
-        Log.d(TAG, "showAddStuff: showAddStuff::");
-        Intent intent = new Intent(getContext(), AddStuffActivity.class);
-        intent.putExtra("STUFFNAME", map.get("STUFFNAME"));
+    public void showAddTask(Map<String, String> map) {
+        Log.d(TAG, "showAddTask: showAddTask::");
+        Intent intent = new Intent(getContext(), AddTaskActivity.class);
+        intent.putExtra("TaskNAME", map.get("TaskNAME"));
         startActivity(intent);
         getActivity().finish();
     }
 
     @Override
-    public void showStuffDetail(String stuffId) {
-        Intent intent = new Intent(getContext(), StuffDetailActivity.class);
-        intent.putExtra("STUFFID", stuffId);
+    public void showTaskDetail(int TaskId) {
+        Intent intent = new Intent(getContext(), TaskDetailActivity.class);
+        intent.putExtra("TaskID", TaskId);
         startActivity(intent);
     }
 
     @Override
-    public void showNoStuffs() {
+    public void showNoTasks() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mRecyclerView.setVisibility(View.GONE);
-                mNoStuffsView.setVisibility(View.VISIBLE);
+                mNoTasksView.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -363,25 +342,6 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
         });
     }
 
-    @Override
-    public void showUserSetting() {
-        try {
-            Intent intent = new Intent(getContext(), UserActivity.class);
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void loadUser(User user) {
-        try {
-            mUserEmail.setText(user.getEmail());
-            mUserName.setText(user.getName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void addDecorator(Collection<CalendarDay> calendarDays) {
@@ -393,10 +353,9 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     }
 
     @Override
-    public void startVoiceService(String userId, String result) {
+    public void startVoiceService(String result) {
         try {
             Intent intent = new Intent(getContext(), VoiceService.class);
-            intent.putExtra("USERID", userId);
             intent.putExtra("RESULT", result);
             getContext().startService(intent);
         } catch (Exception e) {

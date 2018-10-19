@@ -5,8 +5,7 @@ import android.support.annotation.NonNull;
 import com.ljh.gtd3.BasePresenter;
 import com.ljh.gtd3.BaseView;
 import com.ljh.gtd3.data.entity.List;
-import com.ljh.gtd3.data.entity.Stuff;
-import com.ljh.gtd3.data.entity.User;
+import com.ljh.gtd3.data.entity.Task;
 
 import java.util.Map;
 
@@ -17,28 +16,25 @@ import java.util.Map;
 public interface ListDetailContract {
     interface View extends BaseView<Presenter>{
         void setLoadingIndicator(boolean active);   //正在加载指示
-        void setLoadingStuffsError();  //加载错误
-        void showAllStuffs(List list, java.util.List<Stuff> stuffs);  //显示所有stuffs
-        void showAddStuff(Map<String, String > map);   //显示加载stuff
-        void showStuffDetail(String stuffId);    //显示stuffDetial
-        void showNoStuffs();  //显示没有stuffs
+        void setLoadingTasksError();  //加载错误
+        void showAllTasks(List list, java.util.List<Task> tasks);  //显示所有Tasks
+        void showAddTask(Map<String, String > map);   //显示加载Task
+        void showTaskDetail(int TaskId);    //显示TaskDetial
+        void showNoTasks();  //显示没有Tasks
         boolean isActive();  //是否加载Fragment
         void showToast(String message);  //显示toast
-        void showUserSetting();
-        void startVoiceService(String userId, String result);
-        void loadUser(User user);
+        void startVoiceService(String result);
+        
     }
 
     interface Presenter extends BasePresenter{
-        void showAddStuff();
-        void loadStuffs(boolean forceUpdate);
-        void completeStuff(@NonNull Stuff completedStuff);
-        void activateStuff(@NonNull Stuff activeStuff);
-        void showStuffDetail(@NonNull Stuff requestStuff);
-        void addStuff(Stuff stuff); //添加Stuff(处理Affair中的情况)
-        void deleteStuff(Stuff stuff);
-        void showUserSetting();
+        void showAddTask();
+        void loadTasks(boolean forceUpdate);
+        void completeTask(@NonNull Task completedTask);
+        void activateTask(@NonNull Task activeTask);
+        void showTaskDetail(@NonNull Task requestTask);
+        void addTask(Task task); //添加Task(处理Affair中的情况)
+        void deleteTask(Task task);
         void startVoiceService(String result);
-        void loadUser(String userId);
     }
 }

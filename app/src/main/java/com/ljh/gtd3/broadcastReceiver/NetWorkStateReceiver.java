@@ -75,7 +75,7 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
         @Override
         protected Void doInBackground(Void... voids) {
             final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-            String address = "http://192.168.253.1:8080/netWork";
+            String address = "http://172.26.59.1:8080/netWork";
             HttpUtil.sendOkHttpGetRequest(address, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

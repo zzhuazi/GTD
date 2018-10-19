@@ -1,7 +1,6 @@
 package com.ljh.gtd3.data.UsersSource;
 
 import com.ljh.gtd3.data.UsersSource.remote.UsersRemoteDataSource;
-import com.ljh.gtd3.data.entity.User;
 import com.ljh.gtd3.util.SingleExecutors;
 
 import org.junit.After;
@@ -9,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
 
 /**
  * Created by Administrator on 2018/3/12.

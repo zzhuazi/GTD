@@ -6,10 +6,6 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
-import com.ljh.gtd3.data.ListsSource.ListsDataSource;
-import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
-import com.ljh.gtd3.data.ListsSource.ListsRepository;
-import com.ljh.gtd3.data.ListsSource.remote.ListsRemoteDataSource;
 import com.ljh.gtd3.data.entity.Operation;
 import com.ljh.gtd3.data.operationSource.OperationsRepository;
 import com.ljh.gtd3.util.AppExecutors;
@@ -31,7 +27,6 @@ public class AddOperationWordService extends Service {
         List<Operation> operations = new ArrayList<>();
         for (String name : operationName){
             Operation operation = new Operation();
-            operation.setId(UUID.randomUUID().toString());
             operation.setName(name);
             operations.add(operation);
         }

@@ -1,37 +1,26 @@
 package com.ljh.gtd3.util;
 
 import android.app.ActivityManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.ljh.gtd3.allStuff.AllStuffActivity;
-import com.ljh.gtd3.data.ListGroupsSource.ListGroupsDataSource;
-import com.ljh.gtd3.data.ListGroupsSource.ListGroupsLocalDataSource;
-import com.ljh.gtd3.data.ListGroupsSource.ListGroupsRepository;
-import com.ljh.gtd3.data.ListGroupsSource.remote.ListGroupsRemoteDataSource;
+import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.data.ListsSource.ListsDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
-import com.ljh.gtd3.data.ListsSource.remote.ListsRemoteDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsLocalDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsRepository;
-import com.ljh.gtd3.data.StuffsSource.remote.StuffsRemoteDataSource;
-import com.ljh.gtd3.data.entity.ListGroup;
+import com.ljh.gtd3.data.tasksSource.TasksDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.data.entity.Operation;
-import com.ljh.gtd3.data.entity.Stuff;
+import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.data.operationSource.OperationDataSource;
 import com.ljh.gtd3.data.operationSource.OperationsRepository;
 import com.ljh.gtd3.listDetail.ListDetailActicity;
-import com.ljh.gtd3.listGroup.ListGroupActivity;
-import com.ljh.gtd3.stuffDetail.StuffDetailActivity;
-import com.ljh.gtd3.user.UserActivity;
+import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 import com.ljh.gtd3.voiceResult.VoiceResultActivity;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -42,15 +31,11 @@ import org.wltea.analyzer.dic.Dictionary;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import java.io.StringReader;
-import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,41 +44,38 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class VoiceController {
     private static final String TAG = VoiceController.class.getSimpleName();
-    ListGroupsRepository mListGroupsRepository;
     ListsRepository mListsRepository;
-    StuffsRepository mStuffsRepository;
+    TasksRepository mTasksRepository;
     private List<String> mDictionaryList;  //词库
     private List<Operation> mOperationList; //操作命令词
     private List<Object> mObjectList;  //对象命令词
     private List<String> mSegmentResults;  //分词结果列表
-    private String mUserId;
+
     private AppExecutors mAppExecutors;
     private String originalText = null;   //原始语音文本
     private String operationKey = null;   //分词中的操作命令词
-    private String objectKey = null; //分词中的对象命令词
+    private Integer objectKey = null; //分词中的对象命令词
     private Integer objectType;    //对象命令词
     private String dateKey = "";  //分词中的时间词
     private String contentKey = "";  //分词中的其他内容
-    private String defaultListId; //“收集箱id”
+    private int defaultListId; //“收集箱id”
     private Context mContext;
 
     class Object {
         String name;
-        String objectId;
-        int type; //0为listGroup, 1为list, 2为stuff，3为其他
+        Integer objectId;
+        int type; //0为listGroup, 1为list, 2为Task，3为其他
     }
 
-    public void start(Context context, String userId, String text) {
+    public void start(Context context, String text) {
         mContext = context;
-        mUserId = userId;
         mDictionaryList = new ArrayList<>();
         mOperationList = new ArrayList<>();
         mObjectList = new ArrayList<>();
         mAppExecutors = new AppExecutors();
         originalText = text;
-        mListGroupsRepository = ListGroupsRepository.getInstance(ListGroupsLocalDataSource.getInstance(mAppExecutors), ListGroupsRemoteDataSource.getInstance(mAppExecutors));
-        mListsRepository = ListsRepository.getInstance(ListsLocalDataSource.getInstance(mAppExecutors), ListsRemoteDataSource.getInstance(mAppExecutors));
-        mStuffsRepository = StuffsRepository.getInstance(StuffsLocalDataSource.getInstance(mAppExecutors), StuffsRemoteDataSource.getInstance(mAppExecutors));
+        mListsRepository = ListsRepository.getInstance(ListsLocalDataSource.getInstance(mAppExecutors));
+        mTasksRepository = TasksRepository.getInstance(TasksLocalDataSource.getInstance(mAppExecutors));
         try{
             loadDictionaryAndObject();  //加载词库和对象命令词
             loadOperation();   //加载操作命令词
@@ -120,9 +102,9 @@ public class VoiceController {
                     if (objectKey != null) {
                         switch (objectType) {
                             case 0:  //为listGroup，跳转到清单列表
-                                Intent listGroupIntent = new Intent(mContext, ListGroupActivity.class);
-                                listGroupIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(listGroupIntent);
+//                                Intent listGroupIntent = new Intent(mContext, ListGroupActivity.class);
+//                                listGroupIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+//                                mContext.startActivity(listGroupIntent);
                                 break;
                             case 1:  //为list,跳转到对应的list页面
                                 Intent listIntent = new Intent(mContext, ListDetailActicity.class);
@@ -130,8 +112,8 @@ public class VoiceController {
                                 listIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                                 mContext.startActivity(listIntent);
                                 break;
-                            case 2:  //为stuff, 跳转到对应的stuff
-                                toStuffDetailActivity();
+                            case 2:  //为Task, 跳转到对应的Task
+                                toTaskDetailActivity();
                                 break;
                             case 3:  //为闹钟，跳转到闹钟
                                 Intent alarms = new Intent(AlarmClock.ACTION_SET_ALARM);
@@ -165,39 +147,37 @@ public class VoiceController {
                 case "添加":
                 case "新增":
                 case "增加":
-                    Stuff stuff = new Stuff();
-                    stuff.setStuffId(UUID.randomUUID().toString());
-                    stuff.setUserId(mUserId);
+                    Task task = new Task();
                     if (contentKey != null) {
                         Log.d(TAG, "createControlOrder: content key " + contentKey);
-                        stuff.setName(contentKey);
+                        task.setName(contentKey);
                     } else {
-                        stuff.setName("未设置内容");
+                        task.setName("未设置内容");
                     }
-                    stuff.setFinished(false);
-                    stuff.setGmtCreate(simpleDateFormat.format(new Date()));
-                    stuff.setGmtModified(simpleDateFormat.format(new Date()));
-                    stuff.setPriority(0);
+                    task.setFinished(false);
+                    task.setGmtCreate(simpleDateFormat.format(new Date()));
+                    task.setGmtModified(simpleDateFormat.format(new Date()));
+                    task.setPriority(0);
                     if (objectKey != null && objectType == 1) {  //对象为列表
-                        stuff.setListId(objectKey);
+//                        task.setId(objectKey);
                     } else {
-                        stuff.setListId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
+//                        task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
                     }
                     if (dateKey != null && !dateKey.equals("")) {
-                        stuff.setStartTime(dateKey);
+                        task.setStartTime(dateKey);
                     }
-                    Log.d(TAG, "createControlOrder: " + stuff.getStuffId());
-                    mStuffsRepository.addStuff(stuff);
-                    toStuffDetailActivity(stuff.getStuffId()); //跳转到对应的stuffDetail页面
+                    Log.d(TAG, "createControlOrder: " + task.getId());
+                    mTasksRepository.addTask(task);
+                    toTaskDetailActivity(task.getId()); //跳转到对应的TaskDetail页面
                     break;
                 case "完成":
-                    if (objectKey != null && objectType == 2) {  //对象为stuff
-                        Stuff finishedStuff = new Stuff();
-                        finishedStuff.setStuffId(objectKey);
-                        finishedStuff.setFinished(true);
-                        finishedStuff.setGmtModified(simpleDateFormat.format(new Date()));
-                        mStuffsRepository.updateStuff(finishedStuff);
-                        toAllStuffsActivity();
+                    if (objectKey != null && objectType == 2) {  //对象为Task
+                        Task finishedTask = new Task();
+                        finishedTask.setId(objectKey);
+                        finishedTask.setFinished(true);
+                        finishedTask.setGmtModified(simpleDateFormat.format(new Date()));
+                        mTasksRepository.updateTask(finishedTask);
+                        toAllTasksActivity();
                     } else {
                         //命令中没有对象命令词-》打开语音转文字，让用户操作
                         toVoiceResultActivity();
@@ -205,38 +185,28 @@ public class VoiceController {
                     break;
                 case "设置":
                 case "修改":
-                    if (objectKey != null && objectType == 2) { //只修改stuff
-                        Stuff updateStuff = new Stuff();
-                        updateStuff.setStuffId(objectKey);
+                    if (objectKey != null && objectType == 2) { //只修改Task
+                        Task updateTask = new Task();
+                        updateTask.setId(objectKey);
                         if (contentKey != null) {
-                            updateStuff.setName(contentKey);
+                            updateTask.setName(contentKey);
                         } else {
-                            updateStuff.setName("未设置内容");
+                            updateTask.setName("未设置内容");
                         }
                         if (dateKey != null && !dateKey.equals("")) {
-                            updateStuff.setStartTime(dateKey);
+                            updateTask.setStartTime(dateKey);
                         }
-                        updateStuff.setGmtModified(simpleDateFormat.format(new Date()));
-                        mStuffsRepository.updateStuff(updateStuff);
-                        toStuffDetailActivity(); //跳转到对应的stuffDetail页面
+                        updateTask.setGmtModified(simpleDateFormat.format(new Date()));
+                        mTasksRepository.updateTask(updateTask);
+                        toTaskDetailActivity(); //跳转到对应的TaskDetail页面
                     } else {
                         //命令中没有对象命令词-》打开语音转文字，让用户操作
                         toVoiceResultActivity();
                     }
                     break;
-                case "删除":  //只删除stuff
+                case "删除":  //只删除Task
                     if (objectKey != null && objectType == 2) {
-                        mStuffsRepository.deleteStuff(objectKey, new StuffsDataSource.SendRequestCallBack() {
-                            @Override
-                            public void onRequestSuccess(String message) {
-                                toAllStuffsActivity();
-                            }
-
-                            @Override
-                            public void onRequestFail(String message) {
-
-                            }
-                        });
+                        mTasksRepository.deleteTask(objectKey);
                     } else {
                         //命令中没有对象命令词-》打开语音转文字，让用户操作
                         toVoiceResultActivity();
@@ -246,19 +216,19 @@ public class VoiceController {
         } else {  // 没有操作词
             if (objectKey != null) {  //有对象命令词，跳转到对应的页面
                 switch (objectType) {
-                    case 0:  //为listGroup，跳转到清单列表
-                        Intent listGroupIntent = new Intent(mContext, ListGroupActivity.class);
-                        listGroupIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(listGroupIntent);
-                        break;
+//                    case 0:  //为listGroup，跳转到清单列表
+//                        Intent listGroupIntent = new Intent(mContext, ListGroupActivity.class);
+//                        listGroupIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+//                        mContext.startActivity(listGroupIntent);
+//                        break;
                     case 1:  //为list,跳转到对应的list页面
                         Intent listIntent = new Intent(mContext, ListDetailActicity.class);
                         listIntent.putExtra("LISTID", objectKey);
                         listIntent.setFlags(FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(listIntent);
                         break;
-                    case 2:  //为stuff, 跳转到对应的stuff
-                        toStuffDetailActivity();
+                    case 2:  //为Task, 跳转到对应的Task
+                        toTaskDetailActivity();
                         break;
                     case 3:  //为闹钟，跳转到闹钟
                         Intent alarms = new Intent(AlarmClock.ACTION_SET_ALARM);
@@ -266,28 +236,25 @@ public class VoiceController {
                         mContext.startActivity(alarms);
                         break;
                 }
-            } else {//没有操作命令词、没有对象命令词，则视为stuff添加
-                Stuff stuff = new Stuff();
-                stuff.setStuffId(UUID.randomUUID().toString());
-                Log.d(TAG, "createControlOrder: " + stuff.getStuffId());
-                stuff.setUserId(mUserId);
+            } else {//没有操作命令词、没有对象命令词，则视为Task添加
+                Task task = new Task();
                 if (contentKey != null) {
-                    stuff.setName(contentKey);
+                    task.setName(contentKey);
                 } else {
-                    stuff.setName("未设置内容");
+                    task.setName("未设置内容");
                 }
-                stuff.setFinished(false);
-                stuff.setGmtCreate(simpleDateFormat.format(new Date()));
-                stuff.setGmtModified(simpleDateFormat.format(new Date()));
-                stuff.setPriority(0);
-                stuff.setListId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
+                task.setFinished(false);
+                task.setGmtCreate(simpleDateFormat.format(new Date()));
+                task.setGmtModified(simpleDateFormat.format(new Date()));
+                task.setPriority(0);
+//                task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
                 if (dateKey != null && !dateKey.equals("")) {
                     Log.d(TAG, "createControlOrder: set time ");
-                    stuff.setStartTime(dateKey);
+                    task.setStartTime(dateKey);
                 }
-                mStuffsRepository.addStuff(stuff);
-//                mListsRepository.updateStuffsNum(defaultListId);
-                toStuffDetailActivity(stuff.getStuffId()); //跳转到对应的stuffDetail页面
+                mTasksRepository.addTask(task);
+//                mListsRepository.updateTasksNum(defaultListId);
+                toTaskDetailActivity(task.getId()); //跳转到对应的TaskDetail页面
             }
         }
     }
@@ -303,10 +270,10 @@ public class VoiceController {
         }
     }
 
-    private void toStuffDetailActivity() {
+    private void toTaskDetailActivity() {
         try{
-            Intent intent = new Intent(mContext, StuffDetailActivity.class);
-            intent.putExtra("STUFFID", objectKey);
+            Intent intent = new Intent(mContext, TaskDetailActivity.class);
+            intent.putExtra("TaskID", objectKey);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
         }catch (Exception e){
@@ -314,10 +281,10 @@ public class VoiceController {
         }
     }
 
-    private void toStuffDetailActivity(String stuffId) {
+    private void toTaskDetailActivity(int TaskId) {
         try{
-            Intent intent = new Intent(mContext, StuffDetailActivity.class);
-            intent.putExtra("STUFFID", stuffId);
+            Intent intent = new Intent(mContext, TaskDetailActivity.class);
+            intent.putExtra("TASK", TaskId);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
         }catch (Exception e){
@@ -325,12 +292,12 @@ public class VoiceController {
         }
     }
 
-    private void toAllStuffsActivity() {
+    private void toAllTasksActivity() {
         try{
-            Intent intent = new Intent(mContext, AllStuffActivity.class);
+            Intent intent = new Intent(mContext, AllTasksActivity.class);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("REFRESH",true);
-            mContext.startActivity(intent);  //跳转到所有stuffs页面
+            mContext.startActivity(intent);  //跳转到所有Tasks页面
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -576,34 +543,17 @@ public class VoiceController {
 
     //加载词库和对象命令词
     private void loadDictionaryAndObject() {
-        mListGroupsRepository.getListGroups(mUserId, new ListGroupsDataSource.GetListGroupsCallBack() {
-            @Override
-            public void onListGroupsLoaded(List<ListGroup> listGroups, String message) {
-                for (ListGroup listGroup : listGroups) {
-                    Object object = new Object();
-                    object.name = listGroup.getName();
-                    object.objectId = listGroup.getListGroupId();
-                    object.type = 0;
-                    mObjectList.add(object);  //添加对象命令词
-                    mDictionaryList.add(listGroup.getName());  //添加词库
-                }
-            }
 
-            @Override
-            public void onListGroupsFail(String message) {
-
-            }
-        });
-        mListsRepository.GetLists(mUserId, new ListsDataSource.GetListsCallBack() {
+        mListsRepository.GetLists(new ListsDataSource.GetListsCallBack() {
             @Override
             public void onListsLoaded(List<com.ljh.gtd3.data.entity.List> lists, String message) {
                 for (com.ljh.gtd3.data.entity.List list : lists) {
                     if (list.getName().equals("收集箱")) {
-                        defaultListId = list.getListId();
+                        defaultListId = list.getId();
                     }
                     Object object = new Object();
                     object.name = list.getName();
-                    object.objectId = list.getListId();
+                    object.objectId = list.getId();
                     object.type = 1;
                     mObjectList.add(object);  //添加对象命令词
                     mDictionaryList.add(list.getName());  ///添加词库
@@ -615,26 +565,26 @@ public class VoiceController {
 
             }
         });
-        mStuffsRepository.getAllStuffs(mUserId, new StuffsDataSource.GetStuffsCallBack() {
+        mTasksRepository.getAllTasks(new TasksDataSource.GetTasksCallBack() {
             @Override
-            public void onStuffsLoaded(List<Stuff> stuffs, String message) {
-                for (Stuff stuff : stuffs) {
+            public void onTasksLoaded(List<Task> tasks, String message) {
+                for (Task task : tasks) {
                     Object object = new Object();
-                    object.name = stuff.getName();
-                    object.objectId = stuff.getStuffId();
+                    object.name = task.getName();
+                    object.objectId = task.getId();
                     object.type = 2;
                     mObjectList.add(object);  //添加对象命令词
-                    mDictionaryList.add(stuff.getName()); //添加词库
+                    mDictionaryList.add(task.getName()); //添加词库
                 }
             }
 
             @Override
-            public void onStuffsFail(String message) {
+            public void onTasksFail(String message) {
 
             }
         });
         Object object = new Object();
-        object.objectId = UUID.randomUUID().toString();
+//        object.objectId = UUID.randomUUID().toString();
         object.name = "闹钟";
         object.type = 3;
         mObjectList.add(object);

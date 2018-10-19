@@ -16,19 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.addStuff.AddStuffActivity;
-import com.ljh.gtd3.allStuff.AllStuffActivity;
+import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
-import com.ljh.gtd3.data.ListsSource.remote.ListsRemoteDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsLocalDataSource;
-import com.ljh.gtd3.data.StuffsSource.StuffsRepository;
-import com.ljh.gtd3.data.StuffsSource.remote.StuffsRemoteDataSource;
-import com.ljh.gtd3.data.UsersSource.UsersLocalDataSource;
-import com.ljh.gtd3.data.UsersSource.UsersRepository;
-import com.ljh.gtd3.data.UsersSource.remote.UsersRemoteDataSource;
-import com.ljh.gtd3.listGroup.ListGroupActivity;
-import com.ljh.gtd3.notification.NotificationActivity;
+import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
+import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 import com.ljh.gtd3.util.MyApplication;
@@ -42,7 +34,7 @@ public class CalendarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
 
-        // Set up the toolbar.
+        // Set up the toolbar_add_task.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -65,14 +57,10 @@ public class CalendarActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), calendarFragment, R.id.contentFrame);
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-        String userId = sharedPreferences.getString("USERID", null);
         AppExecutors appExecutors = new AppExecutors();
         mCalendarPresenter = new CalendarPresenter(
-                UsersRepository.getInstance(UsersLocalDataSource.getInstance(appExecutors), UsersRemoteDataSource.getInstance(appExecutors),appExecutors),
-                ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors), ListsRemoteDataSource.getInstance(appExecutors)),
-                StuffsRepository.getInstance(StuffsLocalDataSource.getInstance(appExecutors), StuffsRemoteDataSource.getInstance(appExecutors)),
-                userId,
+                ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors)),
+                TasksRepository.getInstance(TasksLocalDataSource.getInstance(appExecutors)),
                 calendarFragment
                 );
     }
@@ -96,17 +84,17 @@ public class CalendarActivity extends AppCompatActivity {
                         break;
                     case R.id.allStuff_navigation_menu_item:
                         //已经在该页面中
-                        Intent intent2 = new Intent(CalendarActivity.this, AllStuffActivity.class);
+                        Intent intent2 = new Intent(CalendarActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.listGroup_navigation_menu_item:
-                        Intent intent = new Intent(CalendarActivity.this, ListGroupActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.notifications_navigation_menu_item:
-                        Intent intent1 = new Intent(CalendarActivity.this, NotificationActivity.class);
-                        startActivity(intent1);
-                        break;
+//                    case R.id.listGroup_navigation_menu_item:
+//                        Intent intent = new Intent(CalendarActivity.this, ListGroupActivity.class);
+//                        startActivity(intent);
+//                        break;
+//                    case R.id.notifications_navigation_menu_item:
+//                        Intent intent1 = new Intent(CalendarActivity.this, NotificationActivity.class);
+//                        startActivity(intent1);
+//                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,17 +14,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ljh.gtd3.R;
-import com.ljh.gtd3.data.entity.ListGroup;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Administrator on 2018/3/17.
@@ -36,15 +30,12 @@ public class AddListFragment extends Fragment implements AddListContract.View {
     private AddListContract.Presenter mPresenter;
 
     private EditText mListNameEt;
-    private LinearLayout mPriorutyLL;
+    private LinearLayout mPriorityLL;
     private ImageView mPriorityIv;
-    private TextView mListGroupNameTv;
 
     private Integer mPriority = 0;
 
-    private String mListId;
-
-    private ListGroup mListGroup = new ListGroup();
+    private Integer mListId;
 
     public static AddListFragment newInstance() {
         AddListFragment fragment = new AddListFragment();
@@ -61,22 +52,10 @@ public class AddListFragment extends Fragment implements AddListContract.View {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_add_list, container, false);
         mListNameEt = root.findViewById(R.id.et_add_list_name);
-        mPriorutyLL = root.findViewById(R.id.ll_add_list_set_priority);
+        mPriorityLL = root.findViewById(R.id.ll_add_list_set_priority);
         mPriorityIv = root.findViewById(R.id.iv_add_list_priority);
-        mListGroupNameTv = root.findViewById(R.id.tv_add_list_listgroup_name);
-        mListGroupNameTv.setTag(R.id.tag_listGroupId, "null");
-        //选择清单组名
-        mListGroupNameTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try{
-                    mPresenter.showSelectListGroups();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-        mPriorutyLL.setOnClickListener(new View.OnClickListener() {
+
+        mPriorityLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
@@ -134,104 +113,6 @@ public class AddListFragment extends Fragment implements AddListContract.View {
     }
 
     @Override
-    public void showSelectListGroups(final List<ListGroup> listGroups) {
-        try{
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-            builder.setTitle("选择所属的清单：");
-            ArrayList<String> listsGroupName = new ArrayList<>();
-            if (listGroups != null) {
-                for (ListGroup listGroup : listGroups) {
-                    listsGroupName.add(listGroup.getName());
-                }
-                final String[] strings = listsGroupName.toArray(new String[listsGroupName.size() + 1]);
-                strings[listsGroupName.size()] = "添加文件夹";
-                builder.setSingleChoiceItems(strings, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialogInterface, final int i) {
-                        try{
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (i != listGroups.size()) {
-                                        mListGroupNameTv.setText(strings[i]);
-                                        mListGroupNameTv.setTag(R.id.tag_listGroupId, listGroups.get(i).getListGroupId());
-                                        mListGroupNameTv.setTag(R.id.tag_userId, listGroups.get(i).getUserId());
-                                    } else {
-                                        String listGroupId = UUID.randomUUID().toString();
-                                        mListGroupNameTv.setTag(R.id.tag_listGroupId, listGroupId);
-                                        addListGroup(listGroupId);
-                                    }
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            } else {
-                String[] strings = {"添加文件夹"};
-                builder.setSingleChoiceItems(strings, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialogInterface, final int i) {
-                        try{
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String listGroupId = UUID.randomUUID().toString();
-                                    addListGroup(listGroupId);
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            });
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void addListGroup(final String listGroupId) {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-        View view = View.inflate(getContext(), R.layout.add_list_group, null);
-        final EditText listGroupName = view.findViewById(R.id.add_list_group_name);
-        builder1.setTitle("新文件夹名")
-                .setView(view)
-                .setPositiveButton("确认", null);
-        final AlertDialog dialog = builder1.create();
-        dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = listGroupName.getText().toString();
-                if (!name.isEmpty()) {
-                    ListGroup listGroup = new ListGroup();
-                    listGroup.setListGroupId(listGroupId);
-                    listGroup.setName(name);
-                    mPresenter.addListGroup(listGroup);
-                    mListGroupNameTv.setTag(R.id.tag_listGroupId, listGroupId);
-                    mListGroupNameTv.setText(name);
-                    dialog.dismiss();
-                } else {
-                    showToast("请输入文件夹名字");
-                }
-            }
-        });
-    }
-
-    @Override
     public void showToast(final String message) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -242,23 +123,16 @@ public class AddListFragment extends Fragment implements AddListContract.View {
     }
 
     @Override
-    public void showListGroups() {
-
-    }
-
-    @Override
-    public void showList(com.ljh.gtd3.data.entity.List list, ListGroup listGroup) {
+    public void showList(com.ljh.gtd3.data.entity.List list) {
         try{
-            mListId = list.getListId();
+            mListId = list.getId();
             mListNameEt.setText(list.getName());
-            if (listGroup != null) {
-                mListGroupNameTv.setText(listGroup.getName());
-            }
+
             if (list.getPriority() == null) {
                 list.setPriority(0);
             }
             mPriority = list.getPriority();
-            mPriorutyLL.setTag(list.getPriority());
+            mPriorityLL.setTag(list.getPriority());
             priorityBackgroupSelector(list.getPriority());
         }catch (Exception e){
             e.printStackTrace();
@@ -267,13 +141,13 @@ public class AddListFragment extends Fragment implements AddListContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar, menu);
+        inflater.inflate(R.menu.toolbar_add_task, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_stuff:
+            case R.id.save_task:
                 try{
                     addList();
                 }catch (Exception e){
@@ -290,19 +164,14 @@ public class AddListFragment extends Fragment implements AddListContract.View {
         } else {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             com.ljh.gtd3.data.entity.List list = new com.ljh.gtd3.data.entity.List();
-            if(mListId == null) {
-                list.setListId(UUID.randomUUID().toString());
-            }else {
-                list.setListId(mListId);
+            if(mListId != null) {
+                list.setId(mListId);
             }
             list.setName(mListNameEt.getText().toString());
-            list.setStuffs(0);
+            list.setTasks(list.getTaskList().size());
             list.setPriority(mPriority);
             list.setGmtCreate(simpleDateFormat.format(new Date()));
             list.setGmtModified(simpleDateFormat.format(new Date()));
-            if (!mListGroupNameTv.getTag(R.id.tag_listGroupId).equals("null")) {
-                list.setListGroupId((String) mListGroupNameTv.getTag(R.id.tag_listGroupId));
-            }
             if(mListId == null) {
                 mPresenter.addList(list);
             }else {
