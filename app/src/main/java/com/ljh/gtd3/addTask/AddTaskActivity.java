@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.sonTaskSource.SonTasksLocalDataSource;
@@ -97,14 +99,14 @@ public class AddTaskActivity extends AppCompatActivity {
                         Intent intent2 = new Intent(AddTaskActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-//                    case R.id.listGroup_navigation_menu_item:
-//                        Intent intent = new Intent(AddTaskActivity.this, ListGroupActivity.class);
-//                        startActivity(intent);
-//                        break;
-//                    case R.id.notifications_navigation_menu_item:
-//                        Intent intent1 = new Intent(AddTaskActivity.this, NotificationActivity.class);
-//                        startActivity(intent1);
-//                        break;
+                    case R.id.list_navigation_menu_item:
+                        Intent intent = new Intent(AddTaskActivity.this, AllListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(AddTaskActivity.this, AddListActivity.class);
+                        startActivity(intent4);
+                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();

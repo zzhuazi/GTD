@@ -21,7 +21,7 @@ public interface CalendarContract {
         void setLoadingTasksError();  //加载错误
         void showAllTasks(List<Task> tasks);  //显示所有Tasks
         void showAddTask(Map<String, String > map);   //显示加载Task
-        void showTaskDetail(int TaskId);    //显示TaskDetial
+        void showTaskDetail(Task task);    //显示TaskDetial
         void showNoTasks();  //显示没有Tasks
         boolean isActive();  //是否加载Fragment
         void showToast(String message);  //显示toast

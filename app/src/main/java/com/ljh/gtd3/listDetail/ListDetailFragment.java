@@ -115,7 +115,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.rv_list_detail);
         mRecyclerView.setLayoutManager(layoutManager);
-        mNoTasksView = root.findViewById(R.id.noTasks);
+        mNoTasksView = root.findViewById(R.id.notasks);
         // Set up floating action button
         FloatingActionButton fab =
                 (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
@@ -173,7 +173,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
             }
         });
 
-        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_Task);
+        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_task);
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -216,10 +216,18 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
         showToast("加载材料错误！");
     }
 
+    public void showList(List list){
+        mList = list;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mListNameTv.setText(mList.getName());
+            }
+        });
+    }
     @Override
-    public void showAllTasks(List list, java.util.List<Task> tasks) {
+    public void showAllTasks(java.util.List<Task> tasks) {
         try{
-            mList = list;
             mTasks = tasks;
             mTasksAdapter = new TasksAdapter(mTasks);
             mTasksAdapter.setOnItemClickListener(new TasksAdapter.TaskItemListener() {
@@ -245,6 +253,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                             @Override
                             public void run() {
                                 mTasks.get(pos).setFinished(true);
+                                mPresenter.completeTask(mTasks.get(pos));
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
@@ -261,6 +270,7 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
                             @Override
                             public void run() {
                                 mTasks.get(pos).setFinished(false);
+                                mPresenter.activateTask(mTasks.get(pos));
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
@@ -297,7 +307,6 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mListNameTv.setText(mList.getName());
                     mRecyclerView.setAdapter(mTasksAdapter);
                     mRecyclerView.setVisibility(View.VISIBLE);
                     mNoTasksView.setVisibility(View.GONE);
@@ -321,10 +330,10 @@ public class ListDetailFragment extends Fragment implements ListDetailContract.V
     }
 
     @Override
-    public void showTaskDetail(int TaskId) {
+    public void showTaskDetail(Task task) {
         try{
             Intent intent = new Intent(getContext(), TaskDetailActivity.class);
-            intent.putExtra("TASKID", TaskId);
+            intent.putExtra("TASK", task);
             startActivity(intent);
         }catch (Exception e){
             e.printStackTrace();

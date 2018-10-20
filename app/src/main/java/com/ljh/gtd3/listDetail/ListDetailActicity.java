@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,10 +17,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
+import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
 import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.util.ActivityUtils;
@@ -57,16 +61,15 @@ public class ListDetailActicity extends AppCompatActivity {
             listDetailFragment = ListDetailFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), listDetailFragment, R.id.contentFrame);
         }
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-        String userId = sharedPreferences.getString("USERID", null);
+
         AppExecutors appExecutors = new AppExecutors();
-        int listId = getIntent().getIntExtra("LISTID",0);
+        List list = getIntent().getParcelableExtra("LIST");
 
         mListDetailPresenter = new ListDetailPresenter(
                 ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors)),
                 TasksRepository.getInstance(TasksLocalDataSource.getInstance(appExecutors)),
                 listDetailFragment,
-                listId);
+                list);
     }
 
     @Override
@@ -92,16 +95,14 @@ public class ListDetailActicity extends AppCompatActivity {
                         Intent intent2 = new Intent(ListDetailActicity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-//                    case R.id.listGroup_navigation_menu_item:
-//                        item.setChecked(false);
-//                        Intent intent = new Intent(ListDetailActicity.this, ListGroupActivity.class);
-//                        startActivity(intent);
-//                        break;
-//                    case R.id.notifications_navigation_menu_item:
-//                        item.setChecked(false);
-//                        Intent intent1 = new Intent(ListDetailActicity.this, NotificationActivity.class);
-//                        startActivity(intent1);
-//                        break;
+                    case R.id.list_navigation_menu_item:
+                        Intent intent = new Intent(ListDetailActicity.this, AllListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(ListDetailActicity.this, AddListActivity.class);
+                        startActivity(intent4);
+                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();

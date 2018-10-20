@@ -13,9 +13,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
@@ -49,7 +53,7 @@ public class CalendarActivity extends AppCompatActivity {
             Resources resource=(Resources)getBaseContext().getResources();
             ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.navigation_menu_item_color);
             navigationView.setItemTextColor(csl);
-            navigationView.getMenu().getItem(0).setChecked(true);
+            navigationView.getMenu().getItem(1).setChecked(true);
         }
         CalendarFragment calendarFragment = (CalendarFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if(calendarFragment == null) {
@@ -81,20 +85,20 @@ public class CalendarActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.calendar_navigation_menu_item:
+                        //已经在该页面中
                         break;
                     case R.id.alltask_navigation_menu_item:
-                        //已经在该页面中
                         Intent intent2 = new Intent(CalendarActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-//                    case R.id.listGroup_navigation_menu_item:
-//                        Intent intent = new Intent(CalendarActivity.this, ListGroupActivity.class);
-//                        startActivity(intent);
-//                        break;
-//                    case R.id.notifications_navigation_menu_item:
-//                        Intent intent1 = new Intent(CalendarActivity.this, NotificationActivity.class);
-//                        startActivity(intent1);
-//                        break;
+                    case R.id.list_navigation_menu_item:
+                        Intent intent = new Intent(CalendarActivity.this, AllListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(CalendarActivity.this, AddListActivity.class);
+                        startActivity(intent4);
+                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();

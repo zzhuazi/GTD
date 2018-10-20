@@ -57,7 +57,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>{
             }
             holder.mTextView.setText(task.getName());
             holder.mCheckBox.setChecked(task.getFinished());
-            holder.mTaskStartTimeTv.setText(task.getStartTime().substring(5,10));
+            if(task.getStartTime() != null) {
+                holder.mTaskStartTimeTv.setText(task.getStartTime().substring(5,10));
+            }
             if(task.getFinished()) {
                 holder.view.setBackgroundDrawable(holder.view.getResources().getDrawable(R.drawable.list_completed_touch_feedback));
             }else{
@@ -65,14 +67,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>{
             }
         }
         if(mItemListener!= null) {
-            holder.mTextView.setOnClickListener(new View.OnClickListener() {
+            holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int pos = holder.getLayoutPosition();
                     mItemListener.onTaskItemClick(view, pos);
                 }
             });
-            holder.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            holder.view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     int pos = holder.getLayoutPosition();

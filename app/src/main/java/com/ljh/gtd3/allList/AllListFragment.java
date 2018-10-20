@@ -20,9 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
 import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.listDetail.ListDetailActicity;
-import com.ljh.gtd3.listTask.ListTasksActivity;
 
 /**
  * @author Administrator
@@ -154,13 +154,13 @@ public class AllListFragment extends Fragment implements AllListContract.View {
                 public void onListItemClick(View view, int pos) {
                     //跳转到该清单中的任务列表页面
                     List list = mLists.get(pos);
-                    showList(list);
+                    mPresenter.showListDetail(list);
                 }
 
                 @Override
                 public void onListItemLongCLick(View view, final int pos) {
                     //长按弹出选择对话框
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 //                    builder.setTitle("设置优先级：");
                     final String[] strings = new String[]{"清单详情", "删除"};
                     builder.setSingleChoiceItems(strings, 0, new DialogInterface.OnClickListener() {
@@ -168,26 +168,27 @@ public class AllListFragment extends Fragment implements AllListContract.View {
                         public void onClick(DialogInterface dialogInterface, final int i) {
                             List list = mLists.get(pos);
                             switch (i) {
-                                case 1: //清单详情
-                                    mPresenter.showListDetail(list);
+                                case 0: //清单详情
+                                    Log.d(TAG, "onClick: 清单详情");
+                                    showListSetting(list);
+                                    dialogInterface.dismiss();
                                     break;
-                                case 2: //删除清单
+                                case 1: //删除清单
+                                    Log.d(TAG, "onClick: 删除清单");
                                     mPresenter.deleteList(list);
                                     mLists.remove(pos);
                                     mListsAdapter.notifyDataSetChanged();
+                                    dialogInterface.dismiss();
                                     break;
                             }
                         }
                     });
-                    final AlertDialog dialog = builder.create();
-
-                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialog.dismiss();
+                        public void run() {
+                            builder.create().show();
                         }
                     });
-                    dialog.show();
                 }
             });
             getActivity().runOnUiThread(new Runnable() {
@@ -204,9 +205,9 @@ public class AllListFragment extends Fragment implements AllListContract.View {
     }
 
     @Override
-    public void showList(List list) {
+    public void showListSetting(List list) {
         if (list != null) {
-            Intent intent = new Intent(getContext(), ListTasksActivity.class);
+            Intent intent = new Intent(getContext(), AddListActivity.class);
             intent.putExtra("LIST", list);
             startActivity(intent);
         }

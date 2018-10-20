@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/alltask_navigation_menu_item"
-        android:icon="@mipmap/createtask"
-        android:title="任务" />
-    <item
-        android:id="@+id/list_navigation_menu_item"
-        android:icon="@mipmap/manage"
-        android:title="清单" />
     <group>
+        <item
+            android:id="@+id/alltask_navigation_menu_item"
+            android:icon="@mipmap/createtask"
+            android:title="任务" />
         <item android:id="@+id/calendar_navigation_menu_item"
             android:icon="@mipmap/time"
             android:title="日历"/>
+    </group>
+    <group>
+        <item
+            android:id="@+id/list_navigation_menu_item"
+            android:icon="@mipmap/manage"
+            android:title="清单" />
+        <item
+            android:id="@+id/add_list_navigation_menu_item"
+            android:icon="@mipmap/add"
+            android:title="添加清单"/>
     </group>
 </menu>

@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.allTask.AllTasksFragment;
 import com.ljh.gtd3.allTask.AllTasksPresenter;
@@ -55,7 +57,7 @@ public class AllListActivity extends AppCompatActivity {
             Resources resource=(Resources)getBaseContext().getResources();
             ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.navigation_menu_item_color);
             navigationView.setItemTextColor(csl);
-            navigationView.getMenu().getItem(1).setChecked(true);
+            navigationView.getMenu().getItem(2).setChecked(true);
         }
 
        //fragment
@@ -93,6 +95,10 @@ public class AllListActivity extends AppCompatActivity {
                     case R.id.alltask_navigation_menu_item:
                         Intent intent = new Intent(AllListActivity.this, AllTasksActivity.class);
                         startActivity(intent);
+                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(AllListActivity.this, AddListActivity.class);
+                        startActivity(intent4);
                         break;
                 }
 //                item.setChecked(true);

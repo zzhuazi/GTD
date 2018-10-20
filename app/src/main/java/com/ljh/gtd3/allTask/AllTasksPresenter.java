@@ -96,6 +96,7 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
         Log.d(TAG, "deleteTask: ");
         try {
             mTasksRepository.deleteTask(task);
+            mListsRepository.subtractTasksNum(task.getList_id());
         } catch (Exception e) {
             e.printStackTrace();
         }

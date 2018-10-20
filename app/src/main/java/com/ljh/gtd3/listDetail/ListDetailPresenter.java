@@ -26,13 +26,13 @@ public class ListDetailPresenter implements ListDetailContract.Presenter{
     private final TasksRepository mTasksRepository;
     private final ListDetailContract.View mListDetailView;
 
-    private int mListId;
+    private List mList;
 
-    public ListDetailPresenter(ListsRepository mListsRepository, TasksRepository mTasksRepository, ListDetailContract.View mListDetailView,int mListId) {
+    public ListDetailPresenter(ListsRepository mListsRepository, TasksRepository mTasksRepository, ListDetailContract.View mListDetailView,List list) {
         this.mListsRepository = mListsRepository;
         this.mTasksRepository = mTasksRepository;
         this.mListDetailView = mListDetailView;
-        this.mListId = mListId;
+        this.mList = list;
         mListDetailView.setPresenter(this);
     }
 
@@ -50,36 +50,33 @@ public class ListDetailPresenter implements ListDetailContract.Presenter{
     @Override
     public void loadTasks(boolean forceUpdate) {
         mListDetailView.setLoadingIndicator(true);
-        mListsRepository.GetList(mListId, new ListsDataSource.GetListCallBack() {
-            @Override
-            public void onListLoaded(final List list, String message) {
-                mTasksRepository.getTasksByListId(mListId, new TasksDataSource.GetTasksCallBack() {
-                    @Override
-                    public void onTasksLoaded(java.util.List<Task> tasks, String message) {
+        if(mList != null) {
+            mTasksRepository.getTasksByListId(mList.getId(), new TasksDataSource.GetTasksCallBack() {
+                @Override
+                public void onTasksLoaded(java.util.List<Task> tasks, String message) {
+                    if(!tasks.isEmpty()) {
                         if(!mListDetailView.isActive()) {
                             return;
                         }
-                        mListDetailView.setLoadingIndicator(false);
-                        mListDetailView.showAllTasks(list, tasks);
+                        mListDetailView.setLoadingIndicator(false);   //取消刷新指示
+                        mListDetailView.showList(mList);                //加载List的信息
+                        mListDetailView.showAllTasks(tasks);             //加载tasks
                     }
+                }
 
-                    @Override
-                    public void onTasksFail(String message) {
-                        mListDetailView.showAllTasks(list, null);
-                        mListDetailView.setLoadingIndicator(false);
+                @Override
+                public void onTasksFail(String message) {
+                    mListDetailView.showList(mList);        //加载List的信息
+                    mListDetailView.setLoadingIndicator(false);
 //                        mListDetailView.setLoadingTasksError();
-                        mListDetailView.showNoTasks();
-                    }
-                });
-            }
-
-            @Override
-            public void onListFail(String message) {
-                mListDetailView.setLoadingIndicator(false);
-                mListDetailView.setLoadingTasksError();
-                mListDetailView.showNoTasks();
-            }
-        });
+                    mListDetailView.showNoTasks();
+                }
+            });
+        }else {
+            mListDetailView.setLoadingIndicator(false);
+            mListDetailView.setLoadingTasksError();
+            mListDetailView.showNoTasks();
+        }
     }
 
 
@@ -111,7 +108,7 @@ public class ListDetailPresenter implements ListDetailContract.Presenter{
 
     @Override
     public void showTaskDetail(@NonNull Task requestTask) {
-        mListDetailView.showTaskDetail(requestTask.getId());
+        mListDetailView.showTaskDetail(requestTask);
     }
 
     @Override
@@ -123,11 +120,12 @@ public class ListDetailPresenter implements ListDetailContract.Presenter{
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 task.setPriority(0);
                 //setList
+                task.setList(mList);
                 task.setGmtCreate(simpleDateFormat.format(new Date()));
                 task.setGmtModified(simpleDateFormat.format(new Date()));
                 task.setFinished(false);
                 mTasksRepository.addTask(task);
-//                mListsRepository.updateTasksNum(task.getId());
+                mListsRepository.updateTasksNum(task.getList_id());
             }
 
             @Override
@@ -142,6 +140,7 @@ public class ListDetailPresenter implements ListDetailContract.Presenter{
         Log.d(TAG, "deleteTask: ");
         try {
             mTasksRepository.deleteTask(task);
+            mListsRepository.subtractTasksNum(task.getList_id());
         } catch (Exception e) {
             e.printStackTrace();
         }

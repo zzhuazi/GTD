@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.entity.Task;
@@ -23,6 +25,7 @@ import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
 import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
 import com.ljh.gtd3.data.tasksSource.TasksRepository;
+import com.ljh.gtd3.listDetail.ListDetailActicity;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 
@@ -98,14 +101,14 @@ public class TaskDetailActivity extends AppCompatActivity {
                         Intent intent2 = new Intent(TaskDetailActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
-////                    case R.id.listGroup_navigation_menu_item:
-////                        Intent intent = new Intent(TaskDetailActivity.this, ListGroupActivity.class);
-////                        startActivity(intent);
-////                        break;
-//                    case R.id.notifications_navigation_menu_item:
-//                        Intent intent1 = new Intent(TaskDetailActivity.this, NotificationActivity.class);
-//                        startActivity(intent1);
-//                        break;
+                    case R.id.list_navigation_menu_item:
+                        Intent intent = new Intent(TaskDetailActivity.this, AllListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(TaskDetailActivity.this, AddListActivity.class);
+                        startActivity(intent4);
+                        break;
                 }
                 item.setChecked(true);
                 mDrawerLayout.closeDrawers();

@@ -95,7 +95,7 @@ public class AddTaskPresenter implements AddTaskContract.Presenter{
             //当startTime and EndTime格式都正确的时候，添加材料
             if(isRightStartTime && isRightEndTime) {
                 mTasksRepository.addTask(task);
-//                mListsRepository.updateTasksNum(task.getId());
+                mListsRepository.updateTasksNum(task.getList_id());
             }else { //否则提示添加失败
                 mAddTaskView.showToast("日期格式错误，添加材料失败");
             }

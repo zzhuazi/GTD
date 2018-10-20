@@ -42,31 +42,34 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".allTask.AllTasksActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".addTask.AddTaskActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".taskDetail.TaskDetailActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".listDetail.ListDetailActicity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".addList.AddListActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".LauncherActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".taskDate.TaskDateActivity" />
-        <activity android:name=".calendar.CalendarActivity" />
-        <activity android:name=".allList.AllListActivity" />
+        <activity android:name=".taskDate.TaskDateActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".calendar.CalendarActivity"
+            android:launchMode="singleTask"/>
+        <activity android:name=".allList.AllListActivity"
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".service.NotifyService"

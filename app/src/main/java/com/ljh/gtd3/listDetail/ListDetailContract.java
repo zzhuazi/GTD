@@ -17,9 +17,10 @@ public interface ListDetailContract {
     interface View extends BaseView<Presenter>{
         void setLoadingIndicator(boolean active);   //正在加载指示
         void setLoadingTasksError();  //加载错误
-        void showAllTasks(List list, java.util.List<Task> tasks);  //显示所有Tasks
+        void showList(List list);    //加载list
+        void showAllTasks( java.util.List<Task> tasks);  //显示所有Tasks
         void showAddTask(Map<String, String > map);   //显示加载Task
-        void showTaskDetail(int TaskId);    //显示TaskDetial
+        void showTaskDetail(Task task);    //显示TaskDetial
         void showNoTasks();  //显示没有Tasks
         boolean isActive();  //是否加载Fragment
         void showToast(String message);  //显示toast

@@ -11,9 +11,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addList.AddListActivity;
+import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
@@ -80,10 +84,6 @@ public class AllTasksActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-//                    case R.id.rv_user_setting:
-//                        Intent intent5 = new Intent(AllTasksActivity.this, UserActivity.class);
-//                        startActivity(intent5);
-//                        break;
                     case R.id.calendar_navigation_menu_item:
                         Intent intent2 = new Intent(AllTasksActivity.this, CalendarActivity.class);
                         startActivity(intent2);
@@ -95,15 +95,32 @@ public class AllTasksActivity extends AppCompatActivity {
                         Intent intent = new Intent(AllTasksActivity.this, AllListActivity.class);
                         startActivity(intent);
                         break;
-//                    case R.id.notifications_navigation_menu_item:
-//                        Intent intent1 = new Intent(AllTasksActivity.this, NotificationActivity.class);
-//                        startActivity(intent1);
-//                        break;
+                    case R.id.add_list_navigation_menu_item:
+                        Intent intent4 = new Intent(AllTasksActivity.this, AddListActivity.class);
+                        startActivity(intent4);
+                        break;
                 }
 //                item.setChecked(true);
                 mDrawerLayout.closeDrawers();
                 return true;
             }
         });
+    }
+
+    private long firstTime = 0;
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+            long secondTime = System.currentTimeMillis();
+            if(secondTime - firstTime > 2000) {
+                Toast.makeText(AllTasksActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                firstTime = secondTime;
+                return true;
+            }else {
+                System.exit(0);
+            }
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }

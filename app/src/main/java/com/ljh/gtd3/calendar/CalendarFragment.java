@@ -136,7 +136,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.rv_calender);
         mRecyclerView.setLayoutManager(layoutManager);
-        mNoTasksView = root.findViewById(R.id.noTasks);
+        mNoTasksView = root.findViewById(R.id.notasks);
         // Set up floating action button
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
 
@@ -237,6 +237,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                             @Override
                             public void run() {
                                 mTasks.get(pos).setFinished(true);
+                                mPresenter.completeTask(mTasks.get(pos));
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
@@ -253,6 +254,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                             @Override
                             public void run() {
                                 mTasks.get(pos).setFinished(false);
+                                mPresenter.activateTask(mTasks.get(pos));
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
@@ -304,15 +306,15 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     public void showAddTask(Map<String, String> map) {
         Log.d(TAG, "showAddTask: showAddTask::");
         Intent intent = new Intent(getContext(), AddTaskActivity.class);
-        intent.putExtra("TaskNAME", map.get("TaskNAME"));
+        intent.putExtra("TASKNAME", map.get("TASKNAME"));
         startActivity(intent);
         getActivity().finish();
     }
 
     @Override
-    public void showTaskDetail(int TaskId) {
+    public void showTaskDetail(Task task) {
         Intent intent = new Intent(getContext(), TaskDetailActivity.class);
-        intent.putExtra("TaskID", TaskId);
+        intent.putExtra("TASK", task);
         startActivity(intent);
     }
 

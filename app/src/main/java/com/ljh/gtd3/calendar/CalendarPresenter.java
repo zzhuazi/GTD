@@ -134,7 +134,7 @@ public class CalendarPresenter implements CalendarContract.Presenter {
 
     @Override
     public void showTaskDetail(@NonNull Task requestTask) {
-        mCalendarView.showTaskDetail(requestTask.getId());
+        mCalendarView.showTaskDetail(requestTask);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class CalendarPresenter implements CalendarContract.Presenter {
                 task.setGmtModified(simpleDateFormat.format(new Date()));
                 task.setFinished(false);
                 mTasksRepository.addTask(task);
-//                mListsRepository.updateTasksNum(task.getId());
+                mListsRepository.updateTasksNum(task.getId());
             }
 
             @Override
@@ -165,6 +165,7 @@ public class CalendarPresenter implements CalendarContract.Presenter {
         Log.d(TAG, "deleteTask: ");
         try {
             mTasksRepository.deleteTask(task);
+            mListsRepository.subtractTasksNum(task.getList_id());
         } catch (Exception e) {
             e.printStackTrace();
         }

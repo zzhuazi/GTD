@@ -18,14 +18,14 @@ public interface AllListContract {
 
         void showAllLists(java.util.List<List> lists);//显示所有List
 
-        void showList(List list);            //跳转到该清单下的任务列表
-        void showListDetail(List list); //跳转到清单详情页面
+        void showListSetting(List list);            //长按到清单详情页面
+        void showListDetail(List list);             //点击跳转到该清单下的任务列表
     }
 
     interface Presenter extends BasePresenter{
         void loadLists(); //加载所有清单
 
-        void showListDetail(List list);  //长按跳转到ListDetail
+        void showListDetail(List list);  //点击跳转到ListDetail
         void updateList(List list);      //更新list
         void deleteList(List list);      //删除list
     }

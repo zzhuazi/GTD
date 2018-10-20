@@ -166,7 +166,7 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
             }
         });
 
-        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_Task);
+        mSwipeRefreshLayout = root.findViewById(R.id.swipe_refresh_all_task);
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -239,12 +239,14 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
                 @Override
                 public void onCompleteTaskClick(View view, int pos) {
                     mTasks.get(pos).setFinished(true);
+                    mPresenter.completeTask(mTasks.get(pos));
                     mTasksAdapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onActivateTaskClick(View view, int pos) {
                     mTasks.get(pos).setFinished(false);
+                    mPresenter.activateTask(mTasks.get(pos));
                     mTasksAdapter.notifyDataSetChanged();
                 }
 
