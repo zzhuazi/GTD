@@ -41,19 +41,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".login.LoginActivity"
-            android:launchMode="singleTop" />
-        <activity
             android:name=".allTask.AllTasksActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".register.RegisterActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".listGroup.ListGroupActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".notification.NotificationActivity"
             android:launchMode="singleTop" />
         <activity
             android:name=".addTask.AddTaskActivity"
@@ -78,7 +66,6 @@
         </activity>
         <activity android:name=".taskDate.TaskDateActivity" />
         <activity android:name=".calendar.CalendarActivity" />
-        <activity android:name=".user.UserActivity" />
 
         <service
             android:name=".service.NotifyService"

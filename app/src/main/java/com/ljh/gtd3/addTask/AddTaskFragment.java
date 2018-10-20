@@ -437,10 +437,10 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                 mPresenter.addTask(task);
 
                 //添加SonTasks
-                mPresenter.addSonTask(mSonTasks);
+                mPresenter.addSonTask(task, mSonTasks);
                 //重新开启消息提示的服务。
                 Intent intent = new Intent(getContext(), NotifyService.class);
-                intent.putExtra("USERID", (String) mListNameTv.getTag(R.id.tag_userId));
+//                intent.putExtra("USERID", (String) mListNameTv.getTag(R.id.tag_userId));
                 getContext().startService(intent);
                 getActivity().finish();
                 Intent intent2 = new Intent(getContext(), AllTasksActivity.class);

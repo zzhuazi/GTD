@@ -47,7 +47,7 @@ public class AllTasksActivity extends AppCompatActivity {
             Resources resource=(Resources)getBaseContext().getResources();
             ColorStateList csl=(ColorStateList)resource.getColorStateList(R.color.navigation_menu_item_color);
             navigationView.setItemTextColor(csl);
-            navigationView.getMenu().getItem(1).setChecked(true);
+            navigationView.getMenu().getItem(0).setChecked(true);
         }
 
         AllTasksFragment allTasksFragment = (AllTasksFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -87,7 +87,7 @@ public class AllTasksActivity extends AppCompatActivity {
                         Intent intent2 = new Intent(AllTasksActivity.this, CalendarActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.allStuff_navigation_menu_item:
+                    case R.id.alltask_navigation_menu_item:
                         //已经在该页面中
                         break;
 //                    case R.id.listGroup_navigation_menu_item:

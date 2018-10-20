@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="105dp"
+    android:layout_height="75dp"
     android:background="?attr/colorPrimaryDark"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/rv_user_setting"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:padding="10dp"
         android:background="?attr/colorPrimary">
 
@@ -26,17 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="email"
+            android:text="今天也要加油鸭！"
             android:textColor="#FFF"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/email"
-            android:text="JAVA"
-            android:textColor="#FFF"
-            android:textSize="14sp"/>
+            android:textSize="16sp"/>
     </RelativeLayout>
 </FrameLayout>

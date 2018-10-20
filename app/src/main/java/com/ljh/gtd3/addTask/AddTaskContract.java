@@ -28,6 +28,6 @@ public interface AddTaskContract {
         void showLists(); //选中清单名时，弹出对话框
         void showAllTasks(); //显示allTasks页面
         void addTask(Task task); //添加Task(处理Affair中的情况)
-        void addSonTask(java.util.List<SonTask> sonTasks);
+        void addSonTask(Task task, java.util.List<SonTask> sonTasks);
     }
 }

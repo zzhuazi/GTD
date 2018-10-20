@@ -106,9 +106,10 @@ public class AddTaskPresenter implements AddTaskContract.Presenter{
     }
 
     @Override
-    public void addSonTask(List<SonTask> sonTasks) {
+    public void addSonTask(Task task, List<SonTask> sonTasks) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (SonTask sonTask : sonTasks){
+            sonTask.setTask(task);
             sonTask.setGmtCreate(simpleDateFormat.format(new Date()));
             sonTask.setGmtModified(simpleDateFormat.format(new Date()));
             mSonTasksRepository.addSonTask(sonTask);

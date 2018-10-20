@@ -111,6 +111,7 @@ public class TaskDetailPresenter implements TaskDetailContract.Presenter {
     public void addSonTask(SonTask sonTask) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //setTask
+        sonTask.setTask_id(mTask.getId());
         sonTask.setGmtCreate(simpleDateFormat.format(new Date()));
         sonTask.setGmtModified(simpleDateFormat.format(new Date()));
         try {

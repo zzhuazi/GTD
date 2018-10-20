@@ -82,7 +82,7 @@ public class CalendarActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.calendar_navigation_menu_item:
                         break;
-                    case R.id.allStuff_navigation_menu_item:
+                    case R.id.alltask_navigation_menu_item:
                         //已经在该页面中
                         Intent intent2 = new Intent(CalendarActivity.this, AllTasksActivity.class);
                         startActivity(intent2);

@@ -78,7 +78,7 @@ public class AddListActivity extends AppCompatActivity {
                         Intent intent3 = new Intent(AddListActivity.this, CalendarActivity.class);
                         startActivity(intent3);
                         break;
-                    case R.id.allStuff_navigation_menu_item:
+                    case R.id.alltask_navigation_menu_item:
                         Intent intent2 = new Intent(AddListActivity.this, AllTasksActivity.class);
                         startActivity(intent2);
                         break;
