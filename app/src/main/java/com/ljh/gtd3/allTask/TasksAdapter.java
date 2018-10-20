@@ -59,6 +59,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>{
             holder.mCheckBox.setChecked(task.getFinished());
             if(task.getStartTime() != null) {
                 holder.mTaskStartTimeTv.setText(task.getStartTime().substring(5,10));
+            }else {
+                holder.mTaskStartTimeTv.setText(" ");
             }
             if(task.getFinished()) {
                 holder.view.setBackgroundDrawable(holder.view.getResources().getDrawable(R.drawable.list_completed_touch_feedback));
