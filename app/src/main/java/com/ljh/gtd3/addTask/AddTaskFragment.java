@@ -409,6 +409,7 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                 task.setIntroduce(mIntroduceEt.getText().toString());
                 task.setPriority(mPriority);
                 task.setFinished(false);
+                task.setList_id((Integer) mListNameTv.getTag(R.id.tag_listId));
                 task.setGmtCreate(simpleDateFormat.format(new Date()));
                 task.setGmtModified(simpleDateFormat.format(new Date()));
                 Log.d(TAG, "addTask: aaa" + mStartTimeTv.getTag().toString());

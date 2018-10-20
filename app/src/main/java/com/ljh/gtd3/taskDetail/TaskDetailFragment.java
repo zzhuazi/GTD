@@ -469,12 +469,13 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Task task = new Task();
-//            task.setId((String) mListNameTv.getTag(R.id.tag_listId));
+            task.setId((Integer) mListNameTv.getTag(R.id.tag_listId));
 //            task.setUserId((String) mListNameTv.getTag(R.id.tag_userId));
             task.setName(mNameEt.getText().toString());
             task.setIntroduce(mIntroduceEt.getText().toString());
             task.setPriority(mPriority);
             task.setFinished(false);
+            task.setList_id((Integer) mListNameTv.getTag(R.id.tag_listId));
             task.setGmtModified(simpleDateFormat.format(new Date()));
             task.setStartTime((String) mStartTimeTv.getTag());
             task.setEndTime((String) mEndTimeTv.getTag());
