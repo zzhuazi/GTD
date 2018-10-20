@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
@@ -90,10 +91,10 @@ public class AllTasksActivity extends AppCompatActivity {
                     case R.id.alltask_navigation_menu_item:
                         //已经在该页面中
                         break;
-//                    case R.id.listGroup_navigation_menu_item:
-//                        Intent intent = new Intent(AllTasksActivity.this, ListGroupActivity.class);
-//                        startActivity(intent);
-//                        break;
+                    case R.id.list_navigation_menu_item:
+                        Intent intent = new Intent(AllTasksActivity.this, AllListActivity.class);
+                        startActivity(intent);
+                        break;
 //                    case R.id.notifications_navigation_menu_item:
 //                        Intent intent1 = new Intent(AllTasksActivity.this, NotificationActivity.class);
 //                        startActivity(intent1);
