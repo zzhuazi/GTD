@@ -15,15 +15,10 @@ import android.view.MenuItem;
 
 import com.ljh.gtd3.R;
 import com.ljh.gtd3.addList.AddListActivity;
-import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.allTask.AllTasksActivity;
-import com.ljh.gtd3.allTask.AllTasksFragment;
-import com.ljh.gtd3.allTask.AllTasksPresenter;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
-import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
-import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 

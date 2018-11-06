@@ -156,21 +156,22 @@ public class TasksLocalDataSource implements TasksDataSource {
     //添加task
     @Override
     public void addTask(@NonNull final Task task) {
-        Runnable runnable = new Runnable() {
-            public void run() {
-                getTask(task.getId(), new GetTaskCallBack() {
-                    @Override
-                    public void onTaskLoaded(Task task, String message) {
-                        updateTask(task);
-                    }
-
-                    @Override
-                    public void onTaskFail(String message) {
-                        task.save();
-                    }
-                });
-            }
-        };
-        mAppExecutors.diskIO().execute(runnable);
+//        Runnable runnable = new Runnable() {
+//            public void run() {
+//                getTask(task.getId(), new GetTaskCallBack() {
+//                    @Override
+//                    public void onTaskLoaded(Task task, String message) {
+//                        updateTask(task);
+//                    }
+//
+//                    @Override
+//                    public void onTaskFail(String message) {
+//                        task.save();
+//                    }
+//                });
+//            }
+//        };
+        task.save();
+//        mAppExecutors.diskIO().execute(runnable);
     }
 }

@@ -8,6 +8,7 @@ import com.ljh.gtd3.data.ListsSource.ListsRepository;
 import com.ljh.gtd3.data.tasksSource.TasksDataSource;
 import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.data.entity.Task;
+import com.ljh.gtd3.util.TasksFilterType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
     private final TasksRepository mTasksRepository;
     private final AllTasksContract.View mAllTaskView;
     private boolean mFirstLoad = false;
+
+    private TasksFilterType mCurrentFiltering = TasksFilterType.ALL_TASKS;
 
     public AllTasksPresenter(ListsRepository mListsRepository, TasksRepository mTasksRepository, AllTasksContract.View mAllTaskView) {
         this.mListsRepository = mListsRepository;
@@ -56,6 +59,7 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
         completedTask.setGmtModified(simpleDateFormat.format(new Date()));
         try {
             mTasksRepository.updateTask(completedTask);
+            loadTasks();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,6 +73,7 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
         activeTask.setGmtModified(simpleDateFormat.format(new Date()));
         try {
             mTasksRepository.updateTask(activeTask);
+            loadTasks();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,6 +113,18 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
         mAllTaskView.startVoiceService(result);
     }
 
+    //设置分类类别
+    @Override
+    public void setFiltering(TasksFilterType requestType) {
+        mCurrentFiltering = requestType;
+    }
+
+    //获得分类类别
+    @Override
+    public TasksFilterType getFiltering() {
+        return mCurrentFiltering;
+    }
+
 
     public void loadTasks() {
         //显示
@@ -132,6 +149,7 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
     private void getTasksFail(String message) {
         mAllTaskView.setLoadingIndicator(false);
         mAllTaskView.setLoadingTasksError();
+        mAllTaskView.showNoTasks();
         mAllTaskView.showToast(message);
     }
 
@@ -139,13 +157,51 @@ public class AllTasksPresenter implements AllTasksContract.Presenter {
     private void getTasksSuccess(List<Task> tasks) {
         if (tasks.size() == 0) {
             mAllTaskView.setLoadingIndicator(false);
-            mAllTaskView.setLoadingTasksError();
+            mAllTaskView.showNoTasks();
         } else {
+            List<Task> tasksToShow = new ArrayList<>();
+            //将tasks按照类别分类
+            for (Task task : tasks) {
+                switch (mCurrentFiltering) {
+                    case ALL_TASKS:
+                        tasksToShow.add(task);
+                        break;
+                    case ACTIIVE_TASKS:
+                        if (!task.getFinished()) {
+                            tasksToShow.add(task);
+                        }
+                        break;
+                    case COMPLETED_TASKS:
+                        if (task.getFinished()) {
+                            tasksToShow.add(task);
+                        }
+                        break;
+                    default:
+                        tasksToShow.add(task);
+                        break;
+                }
+            }
+            //判断fragment是否添加，若未添加则退出
             if (!mAllTaskView.isActive()) {
                 return;
             }
+            //取消下拉刷新的刷新效果
             mAllTaskView.setLoadingIndicator(false);
-            mAllTaskView.showAllTasks(tasks);
+            Log.d(TAG, "getTasksSuccess: tasksToShow::::::::::::::" + tasksToShow.size());
+            //判断要显示的tasks是否为空
+            if (tasksToShow.isEmpty()) {
+                mAllTaskView.showNoTasks();
+                switch (mCurrentFiltering) {
+                    case ACTIIVE_TASKS:
+                        mAllTaskView.showToast("没有未完成的任务");
+                        break;
+                    case COMPLETED_TASKS:
+                        mAllTaskView.showToast("没有已完成的任务");
+                        break;
+                }
+            } else {
+                mAllTaskView.showAllTasks(tasksToShow);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.ljh.gtd3.BasePresenter;
 import com.ljh.gtd3.BaseView;
 import com.ljh.gtd3.data.entity.Task;
+import com.ljh.gtd3.util.TasksFilterType;
 
 import java.util.List;
 import java.util.Map;
@@ -41,5 +42,9 @@ public interface AllTasksContract {
         void deleteTask(Task task);      //删除Task
 
         void startVoiceService(String result);    //开启语音服务
+
+        void setFiltering(TasksFilterType requestType);  //设置任务分类的类别
+
+        TasksFilterType getFiltering();
     }
 }

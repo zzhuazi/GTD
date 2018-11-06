@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.ljh.gtd3.R;
 import com.ljh.gtd3.addList.AddListActivity;
-import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.allList.AllListActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;

@@ -14,15 +14,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,11 +37,12 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.sunflower.FlowerCollector;
 import com.ljh.gtd3.R;
+import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.service.VoiceService;
-import com.ljh.gtd3.addTask.AddTaskActivity;
 import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 import com.ljh.gtd3.util.IatSettings;
+import com.ljh.gtd3.util.TasksFilterType;
 import com.ljh.gtd3.util.XunfeiJsonParser;
 
 import org.json.JSONException;
@@ -105,6 +107,8 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
         mRecyclerView = root.findViewById(R.id.rv_all_task);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
+//        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
+//        mRecyclerView.setLayoutManager(gridLayoutManager);
         mNoTasksView = root.findViewById(R.id.noTasks);
         mNoTasksIcon = root.findViewById(R.id.noTasksIcon);
         mNoStufsfMainView = root.findViewById(R.id.noTasksMain);
@@ -182,18 +186,60 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
         });
         mPresenter.start();
 
+        setHasOptionsMenu(true);
         return root;
+    }
+
+    //设置toorbar中菜单的点击事件
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_filter:
+                showFilterPopUpMenu();
+                break;
+        }
+        return true;
+    }
+
+    //创建toorbar中的菜单
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_tasks_menu, menu);
+    }
+
+    //创建分类的弹出式菜单
+    private void showFilterPopUpMenu() {
+        //创建弹出式的菜单
+        PopupMenu popupMenu = new PopupMenu(getContext(), getActivity().findViewById(R.id.menu_filter));
+        popupMenu.getMenuInflater().inflate(R.menu.filter_tasks, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.active:
+                        mPresenter.setFiltering(TasksFilterType.ACTIIVE_TASKS);
+                        break;
+                    case R.id.completed:
+                        mPresenter.setFiltering(TasksFilterType.COMPLETED_TASKS);
+                        break;
+                    default:
+                        mPresenter.setFiltering(TasksFilterType.ALL_TASKS);
+                }
+                //load tasks
+                mPresenter.loadTasks();
+                return true;
+            }
+        });
+
+        popupMenu.show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         try {
-            boolean refresh = getActivity().getIntent().getBooleanExtra("REFRESH", false);
-            if (refresh) {
-                Log.d(TAG, "onCreateView: 刷新刷新刷新");
-                mPresenter.loadTasks();
-            }
+            mPresenter.loadTasks();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -321,9 +367,14 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
     @Override
     public void showNoTasks() {
         try {
-            setLoadingIndicator(false);
-            mRecyclerView.setVisibility(View.GONE);
-            mNoTasksView.setVisibility(View.VISIBLE);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setLoadingIndicator(false);
+                    mRecyclerView.setVisibility(View.GONE);
+                    mNoTasksView.setVisibility(View.VISIBLE);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -345,7 +396,7 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
     }
 
     @Override
-    public void startVoiceService( String result) {
+    public void startVoiceService(String result) {
         try {
             Intent intent = new Intent(getContext(), VoiceService.class);
             intent.putExtra("RESULT", result);

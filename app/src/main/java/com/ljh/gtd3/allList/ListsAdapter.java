@@ -1,6 +1,7 @@
 package com.ljh.gtd3.allList;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import com.ljh.gtd3.data.entity.List;
  * @date 2018/10/20
  */
 public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> {
-
+    public static final String TAG = ListsAdapter.class.getSimpleName();
     private java.util.List<List> mLists;
     private ListItemListener mItemListener = null;
 

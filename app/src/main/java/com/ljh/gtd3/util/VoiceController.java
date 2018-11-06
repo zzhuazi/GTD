@@ -76,14 +76,14 @@ public class VoiceController {
         originalText = text;
         mListsRepository = ListsRepository.getInstance(ListsLocalDataSource.getInstance(mAppExecutors));
         mTasksRepository = TasksRepository.getInstance(TasksLocalDataSource.getInstance(mAppExecutors));
-        try{
+        try {
             loadDictionaryAndObject();  //加载词库和对象命令词
             loadOperation();   //加载操作命令词
             SystemClock.sleep(500);
             getIkAnalyzer(text);   //获得分词列表
             handleSegmentation();  //处理分词列表
             createControlOrder(); //生成控制代码
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             toVoiceResultActivity();
         }
@@ -118,7 +118,7 @@ public class VoiceController {
                             case 3:  //为闹钟，跳转到闹钟
                                 Intent alarms = new Intent(AlarmClock.ACTION_SET_ALARM);
                                 alarms.setFlags(FLAG_ACTIVITY_NEW_TASK);
-                                if(alarms.resolveActivity(mContext.getPackageManager())!=null){
+                                if (alarms.resolveActivity(mContext.getPackageManager()) != null) {
                                     mContext.startActivity(alarms);
                                 }
                                 break;
@@ -161,7 +161,7 @@ public class VoiceController {
                     if (objectKey != null && objectType == 1) {  //对象为列表
 //                        task.setId(objectKey);
                     } else {
-//                        task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
+                        task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
                     }
                     if (dateKey != null && !dateKey.equals("")) {
                         task.setStartTime(dateKey);
@@ -247,7 +247,7 @@ public class VoiceController {
                 task.setGmtCreate(simpleDateFormat.format(new Date()));
                 task.setGmtModified(simpleDateFormat.format(new Date()));
                 task.setPriority(0);
-//                task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
+                task.setId(defaultListId);   //如果未找到list对象，则添加到默认的收集箱中
                 if (dateKey != null && !dateKey.equals("")) {
                     Log.d(TAG, "createControlOrder: set time ");
                     task.setStartTime(dateKey);
@@ -260,45 +260,45 @@ public class VoiceController {
     }
 
     private void toVoiceResultActivity() {
-        try{
+        try {
             Intent intent = new Intent(mContext, VoiceResultActivity.class);
             intent.putExtra("RESULT", originalText);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void toTaskDetailActivity() {
-        try{
+        try {
             Intent intent = new Intent(mContext, TaskDetailActivity.class);
             intent.putExtra("TaskID", objectKey);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void toTaskDetailActivity(int TaskId) {
-        try{
+        try {
             Intent intent = new Intent(mContext, TaskDetailActivity.class);
             intent.putExtra("TASK", TaskId);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void toAllTasksActivity() {
-        try{
+        try {
             Intent intent = new Intent(mContext, AllTasksActivity.class);
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("REFRESH",true);
+            intent.putExtra("REFRESH", true);
             mContext.startActivity(intent);  //跳转到所有Tasks页面
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -395,7 +395,7 @@ public class VoiceController {
             System.out.println("时匹配");
 
             hour = hourMatcher.group(); //获取“点|时”前的数字
-            if(hour.length() != 1) {
+            if (hour.length() != 1) {
                 hour = hour.substring(0, hour.length() - 1);
 //                hour = getNumber(hour);
                 if (Integer.parseInt(hour) > 25) {
@@ -460,16 +460,16 @@ public class VoiceController {
             dateKey += (":" + Calendar.getInstance().get(Calendar.MINUTE));
         }
         dateKey += ":00";
-        Log.d(TAG, "hasTime: "+ dateKey);
+        Log.d(TAG, "hasTime: " + dateKey);
         //判断日期格式是否为"yyyy-MM-dd HH:mm:ss"
-        if(!DateUtil.isRightDateStr(dateKey)) {
+        if (!DateUtil.isRightDateStr(dateKey)) {
             dateKey = null;
         }
     }
 
     @NonNull
     private String getNumber(String matcherResult) {
-        String regEx="[^0-9]";
+        String regEx = "[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(matcherResult);
         String result = m.replaceAll("").trim();
