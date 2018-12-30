@@ -347,7 +347,6 @@ public class AllTasksFragment extends Fragment implements AllTasksContract.View 
             Intent intent = new Intent(getContext(), AddTaskActivity.class);
             intent.putExtra("TASKNAME", map.get("TASKNAME"));
             startActivity(intent);
-            getActivity().finish();
         } catch (Exception e) {
             e.printStackTrace();
         }

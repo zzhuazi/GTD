@@ -54,7 +54,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentRight="true"
-                android:src="@mipmap/warning" />
+                android:src="@drawable/ic_priority_high_black_24dp" />
         </RelativeLayout>
 
         <EditText

@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.haibin.calendarview.CalendarLayout;
+import com.haibin.calendarview.CalendarView;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -41,10 +43,6 @@ import com.ljh.gtd3.service.VoiceService;
 import com.ljh.gtd3.taskDetail.TaskDetailActivity;
 import com.ljh.gtd3.util.IatSettings;
 import com.ljh.gtd3.util.XunfeiJsonParser;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.CalendarMode;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,15 +60,33 @@ import java.util.Map;
  * Created by Administrator on 2018/3/29.
  */
 
-public class CalendarFragment extends Fragment implements CalendarContract.View {
+public class CalendarFragment extends Fragment implements
+        CalendarContract.View,
+        CalendarView.OnCalendarSelectListener,
+        CalendarView.OnYearChangeListener {
     public static final String TAG = CalendarContract.class.getSimpleName();
     private CalendarContract.Presenter mPresenter;
-    private MaterialCalendarView mMaterialCalendarView;
-    private RecyclerView mRecyclerView;
+
+    TextView mTextMonthDay;
+
+    TextView mTextYear;
+
+    TextView mTextLunar;
+
+    TextView mTextCurrentDay;
+
+    CalendarView mCalendarView;
+
+    RelativeLayout mRelativeTool;
+
+    private int mYear;
+    CalendarLayout mCalendarLayout;
+
+    private RecyclerView mRecyclerView;   //加载Tasks
     private TasksAdapter mTasksAdapter;
     private View mNoTasksView;
     private TextView mTaskStartDate;
-    
+
 
     //语音听写对象
     private SpeechRecognizer mIat;
@@ -104,35 +120,43 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
 
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         View headView = navigationView.inflateHeaderView(R.layout.nav_header);
-       
-        mTaskStartDate = getActivity().findViewById(R.id.title_text);
-        mMaterialCalendarView = root.findViewById(R.id.mcv_calendar);
-        mMaterialCalendarView.state().edit()
-                //设置周一为第一天
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit();
-        mMaterialCalendarView.setSelectionColor(getResources().getColor(R.color.colorGreen));
-        mMaterialCalendarView.setSelectedDate(new Date());
-        mMaterialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+
+        mTaskStartDate = root.findViewById(R.id.title_text);
+        mTextMonthDay = getActivity().findViewById(R.id.tv_month_day);
+        mTextYear = getActivity().findViewById(R.id.tv_year);
+        mTextLunar = getActivity().findViewById(R.id.tv_lunar);
+        mRelativeTool = getActivity().findViewById(R.id.rl_tool);
+        mCalendarView = root.findViewById(R.id.calendarView);
+        mTextCurrentDay = getActivity().findViewById(R.id.tv_current_day);
+        mTextMonthDay.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull final CalendarDay date, boolean selected) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            mTasks.clear();
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            Log.d(TAG, "onDateSelected: " + simpleDateFormat.format(date.getDate()));
-                            mPresenter.loadTasks(simpleDateFormat.format(date.getDate()));
-                            showAllTasks(mTasks);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+            public void onClick(View v) {
+                if (!mCalendarLayout.isExpand()) {
+                    mCalendarView.showYearSelectLayout(mYear);
+                    return;
+                }
+                mCalendarView.showYearSelectLayout(mYear);
+                mTextLunar.setVisibility(View.GONE);
+                mTextYear.setVisibility(View.GONE);
+                mTextMonthDay.setText(String.valueOf(mYear));
             }
         });
+        getActivity().findViewById(R.id.fl_current).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCalendarView.scrollToCurrent();
+            }
+        });
+
+        mCalendarLayout = root.findViewById(R.id.calendarLayout);
+        mCalendarView.setOnYearChangeListener(this);
+        mCalendarView.setOnCalendarSelectListener(this);
+        mTextYear.setText(String.valueOf(mCalendarView.getCurYear()));
+        mYear = mCalendarView.getCurYear();
+        mTextMonthDay.setText(mCalendarView.getCurMonth() + "月" + mCalendarView.getCurDay() + "日");
+        mTextLunar.setText("今日");
+        mTextCurrentDay.setText(String.valueOf(mCalendarView.getCurDay()));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = root.findViewById(R.id.rv_calender);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -217,21 +241,21 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
             mTasksAdapter.setOnItemClickListener(new TasksAdapter.TaskItemListener() {
                 @Override
                 public void onTaskItemClick(View view, final int pos) {
-                    try{
+                    try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 mPresenter.showTaskDetail(mTasks.get(pos));
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onCompleteTaskClick(View view, final int pos) {
-                    try{
+                    try {
                         mPresenter.completeTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -241,14 +265,14 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onActivateTaskClick(View view, final int pos) {
-                    try{
+                    try {
                         mPresenter.activateTask(mTasks.get(pos));
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -258,14 +282,14 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                                 mTasksAdapter.notifyDataSetChanged();
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onTaskItemLongClick(View view, final int pos) {
-                    try{
+                    try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -283,7 +307,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                                 builder.create().show();
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -346,15 +370,6 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
 
 
     @Override
-    public void addDecorator(Collection<CalendarDay> calendarDays) {
-        try {
-            mMaterialCalendarView.addDecorator(new EventDecorator(Color.BLUE, calendarDays));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void startVoiceService(String result) {
         try {
             Intent intent = new Intent(getContext(), VoiceService.class);
@@ -364,6 +379,53 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void setSchemeDate(final Map<String, com.haibin.calendarview.Calendar> map) {
+        Log.d(TAG, "setSchemeDate: map.size = " + map.size());
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCalendarView.setSchemeDate(map);
+            }
+        });
+    }
+
+    @Override
+    public void onCalendarOutOfRange(com.haibin.calendarview.Calendar calendar) {
+
+    }
+
+    @Override
+    public void onCalendarSelect(com.haibin.calendarview.Calendar calendar, boolean isClick) {
+        mTextLunar.setVisibility(View.VISIBLE);
+        mTextYear.setVisibility(View.VISIBLE);
+        int month = calendar.getMonth();
+        int day = calendar.getDay();
+        mYear = calendar.getYear();
+
+        mTextMonthDay.setText(month + "月" + day + "日");
+        mTextYear.setText(String.valueOf(calendar.getYear()));
+        mTextLunar.setText(calendar.getLunar());
+        String startTime;
+        if(month <10 && day <10) {      //根据日期的情况生成startTime，然后动态加载tasks
+             startTime = mYear + "-0" + month + "-0" + day;
+        }else if(month < 10) {
+             startTime = mYear + "-0" + month + "-" + day;
+        }else if(day < 10) {
+             startTime = mYear + "-" + month + "-0" + day;
+        }else {
+             startTime = mYear + "-" + month + "-" + day;
+        }
+        Log.d(TAG, "onCalendarSelect: 日期更换点击：：：：：：：：：" + startTime);
+        mPresenter.loadTasks(startTime);
+    }
+
+    @Override
+    public void onYearChange(int year) {
+        mTextMonthDay.setText(String.valueOf(year));
+    }
+
     //**********************语音部分*********************
     /**
      * 初始化监听器。

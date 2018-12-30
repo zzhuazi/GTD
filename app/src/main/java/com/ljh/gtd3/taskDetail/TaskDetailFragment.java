@@ -129,41 +129,46 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
     }
 
     @Override
-    public void showTask(Task task, List list) {
+    public void showTask(final Task task, final List list) {
         try {
-            mTask = task;
-            mListNameTv.setText(list.getName());
-            mListNameTv.setTag(R.id.tag_listId, list.getId());
-            mNameEt.setText(task.getName());
-            if (task.getStartTime() != null) {
-                if (!task.getStartTime().isEmpty()) {
-                    if (!task.getStartTime().equals("null")) {
-                        mStartTimeTv.setText(task.getStartTime());
-                        mStartTimeTv.setTag(task.getStartTime());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTask = task;
+                    mListNameTv.setText(list.getName());
+                    mListNameTv.setTag(R.id.tag_listId, list.getId());
+                    mNameEt.setText(task.getName());
+                    if (task.getStartTime() != null) {
+                        if (!task.getStartTime().isEmpty()) {
+                            if (!task.getStartTime().equals("null")) {
+                                mStartTimeTv.setText(task.getStartTime());
+                                mStartTimeTv.setTag(task.getStartTime());
+                            }
+                        } else {
+                            mStartTimeTv.setText(task.getStartTime());
+                        }
                     }
-                } else {
-                    mStartTimeTv.setText(task.getStartTime());
-                }
-            }
-            if (task.getEndTime() != null) {
-                if (!task.getEndTime().isEmpty()) {
-                    if (!task.getEndTime().equals("null")) {
-                        mEndTimeTv.setText(task.getEndTime());
-                        mEndTimeTv.setTag(task.getEndTime());
+                    if (task.getEndTime() != null) {
+                        if (!task.getEndTime().isEmpty()) {
+                            if (!task.getEndTime().equals("null")) {
+                                mEndTimeTv.setText(task.getEndTime());
+                                mEndTimeTv.setTag(task.getEndTime());
+                            }
+                        } else {
+                            mEndTimeTv.setText(task.getEndTime());
+                        }
                     }
-                } else {
-                    mEndTimeTv.setText(task.getEndTime());
+                    if (task.getIntroduce() != null) {
+                        mIntroduceEt.setText(task.getIntroduce());
+                    }
+                    if (task.getPriority() == null) {
+                        task.setPriority(0);
+                    }
+                    mPriority = task.getPriority();
+                    mPriorityIv.setTag(task.getPriority());
+                    priorityBackGroupSelector(task.getPriority());
                 }
-            }
-            if (task.getIntroduce() != null) {
-                mIntroduceEt.setText(task.getIntroduce());
-            }
-            if (task.getPriority() == null) {
-                task.setPriority(0);
-            }
-            mPriority = task.getPriority();
-            mPriorityIv.setTag(task.getPriority());
-            priorityBackGroupSelector(task.getPriority());
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -250,6 +255,7 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
             switch (requestCode) {
                 case 1:
                     if (resultCode == RESULT_OK) {
+                        Log.d(TAG, "onActivityResult: " + data.getStringExtra("DATE"));
                         mStartTimeTv.setTag(data.getStringExtra("DATE"));
                         mStartTimeTv.setText(mStartTimeTv.getTag().toString());
                     } else if (resultCode == RESULT_CANCELED) {
@@ -278,22 +284,28 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("设置优先级：");
             final String[] strings = new String[]{"无", "低", "中", "高"};
-            builder.setSingleChoiceItems(strings, 0, new DialogInterface.OnClickListener() {
+            Integer priority = mTask.getPriority();
+            if(priority == null) {
+                priority = 0;
+            }
+            builder.setSingleChoiceItems(strings, priority, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, final int i) {
                     mPriority = i;
                     priorityBackGroupSelector(i);
+                    dialogInterface.dismiss();
                 }
             });
             final AlertDialog dialog = builder.create();
-
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialog.dismiss();
-                }
-            });
             dialog.show();
+
+//            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialogInterface, int i) {
+//                    dialog.dismiss();
+//                }
+//            });
+//            dialog.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -302,13 +314,16 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
     private void priorityBackGroupSelector(int i) {
         switch (i) {
             case 1:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorBule));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_blue_24dp);
+//                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorBule));
                 break;
             case 2:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorYellow));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_yellow_24dp);
+//                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorYellow));
                 break;
             case 3:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_red_24dp);
                 break;
         }
     }

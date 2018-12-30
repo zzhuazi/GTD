@@ -2,10 +2,10 @@ package com.ljh.gtd3.calendar;
 
 import android.support.annotation.NonNull;
 
+import com.haibin.calendarview.Calendar;
 import com.ljh.gtd3.BasePresenter;
 import com.ljh.gtd3.BaseView;
 import com.ljh.gtd3.data.entity.Task;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,8 +26,8 @@ public interface CalendarContract {
         boolean isActive();  //是否加载Fragment
         void showToast(String message);  //显示toast
         void startVoiceService(String result);
-  
-        void addDecorator(Collection<CalendarDay> calendarDays);  //添加日历上的小蓝点
+
+        void setSchemeDate(Map<String, Calendar> map);
     }
 
     interface Presenter extends BasePresenter{
@@ -41,6 +41,6 @@ public interface CalendarContract {
         void showAddTask();
         void startVoiceService(String result);
 
-        void addDecorator();
+        void setSchemeDate(); //设置标记
     }
 }

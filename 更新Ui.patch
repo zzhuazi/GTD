@@ -1,0 +1,81 @@
+Index: app/src/main/java/com/ljh/gtd3/data/DBSupport.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/ljh/gtd3/data/DBSupport.java	(date 1533613805000)
++++ app/src/main/java/com/ljh/gtd3/data/DBSupport.java	(date 1533629504597)
+@@ -9,6 +9,7 @@
+ 
+ /**
+  * Created by Administrator on 2018/3/12.
++ * 修改litepal的find and save操作
+  */
+ 
+ public abstract class DBSupport<T  extends DBSupport> extends DataSupport {
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(date 1533613822887)
++++ .idea/vcs.xml	(date 1533613822887)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/java/com/ljh/gtd3/data/UsersSource/UsersRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/ljh/gtd3/data/UsersSource/UsersRepository.java	(date 1533613805000)
++++ app/src/main/java/com/ljh/gtd3/data/UsersSource/UsersRepository.java	(date 1534167885674)
+@@ -28,7 +28,7 @@
+  * Created by Administrator on 2018/3/8.
+  */
+ 
+-public class UsersRepository implements UsersDataSource{
++public class UsersRepository implements UsersDataSource {
+     private static final String TAG = UsersRepository.class.getSimpleName();
+     private static UsersRepository INSTANCE = null;
+ 
+@@ -42,21 +42,21 @@
+ //    //标记缓存是否有效，强制更新数据请求
+ //    boolean mCacheIsDirty = false;
+ 
+-    private UsersRepository(@NonNull UsersDataSource usersLocalDataSource, @NonNull UsersDataSource usersRemoteDataSource, @NonNull AppExecutors appExecutors){
++    private UsersRepository(@NonNull UsersDataSource usersLocalDataSource, @NonNull UsersDataSource usersRemoteDataSource, @NonNull AppExecutors appExecutors) {
+         mUsersLocalDataSource = usersLocalDataSource;
+         mUsersRemoteDataSource = usersRemoteDataSource;
+         mAppExecutors = appExecutors;
+ //        mCachedUser = new LinkedHashMap<>();
+     }
+ 
+-    public static UsersRepository getInstance(UsersDataSource userslocalDataSource, UsersDataSource usersRemoteDataSource, AppExecutors appExecutors){
+-        if(INSTANCE == null ) {
++    public static UsersRepository getInstance(UsersDataSource userslocalDataSource, UsersDataSource usersRemoteDataSource, AppExecutors appExecutors) {
++        if (INSTANCE == null) {
+             INSTANCE = new UsersRepository(userslocalDataSource, usersRemoteDataSource, appExecutors);
+         }
+         return INSTANCE;
+     }
+ 
+-    public static void destroyInstance(){
++    public static void destroyInstance() {
+         INSTANCE = null;
+     }
+ 
+@@ -182,7 +182,7 @@
+         mUsersLocalDataSource.deleteUser(checkNotNull(userId));
+     }
+ 
+-    public void login(@NonNull final String email, @NonNull final String password, @NonNull final GetUserCallBack callBack){
++    public void login(@NonNull final String email, @NonNull final String password, @NonNull final GetUserCallBack callBack) {
+         //先到本地中登录
+         mUsersLocalDataSource.login(email, password, new GetUserCallBack() {
+             @Override

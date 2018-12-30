@@ -35,5 +35,7 @@ public interface TaskDetailContract {
         void activateSonTask(SonTask sonTask);
         void updateSonTask(SonTask sonTask);
         void deleteSonTask(int SonTaskId);
+
+        void replaceTask(Task task);  //更新presenter中的task
     }
 }

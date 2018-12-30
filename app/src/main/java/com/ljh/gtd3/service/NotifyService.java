@@ -5,9 +5,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.data.tasksSource.TasksLocalDataSource;
 import com.ljh.gtd3.data.tasksSource.TasksRepository;
@@ -36,7 +38,6 @@ public class NotifyService extends Service {
             @Override
             public void run() {
                 if(intent == null) {
-                    Log.d(TAG, "run: intent is null.");
                     stopSelf();
                     return;
                 }
@@ -81,16 +82,17 @@ public class NotifyService extends Service {
                                     break;
                                 }
                             }
-                            for (Task Task: tasks){
-                                Log.d(TAG, "notifyService Tasks :" + Task.getStartTime());
-                            }
                             if(tasks.size() != 0) {
                                 long triggerAtMillis = simpleDateFormat.parse(tasks.get(0).getStartTime()).getTime();
                                 Log.d(TAG, "onCreate: " + triggerAtMillis);
                                 Intent intent1 = new Intent(NotifyService.this, AlarmReceiver.class);
-                                intent1.putExtra("TASKID", tasks.get(0).getId());
-                                intent1.putExtra("TASKNAME", tasks.get(0).getName());
-                                intent1.putExtra("TASKINTRODUCE", tasks.get(0).getIntroduce());
+                                Bundle bundle = new Bundle();
+                                bundle.putString("TASK", new Gson().toJson(tasks.get(0)));
+                                intent1.putExtras(bundle);
+//                                intent1.putExtra("TASK", tasks.get(0));
+//                                intent1.putExtra("TASKID", tasks.get(0).getId());
+//                                intent1.putExtra("TASKNAME", tasks.get(0).getName());
+//                                intent1.putExtra("TASKINTRODUCE", tasks.get(0).getIntroduce());
                                 intent1.setAction("NOTIFICATION");
                                 //提醒的行动，发送广播
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(NotifyService.this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);

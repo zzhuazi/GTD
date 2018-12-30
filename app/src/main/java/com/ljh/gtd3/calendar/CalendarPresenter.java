@@ -9,7 +9,6 @@ import com.ljh.gtd3.data.tasksSource.TasksDataSource;
 import com.ljh.gtd3.data.tasksSource.TasksRepository;
 import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.data.entity.Task;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class CalendarPresenter implements CalendarContract.Presenter {
     public void start() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         loadTasks(simpleDateFormat.format(new Date()));
-        addDecorator();
+        setSchemeDate();
     }
 
     @Override
@@ -50,6 +49,7 @@ public class CalendarPresenter implements CalendarContract.Presenter {
         mCalendarView.showAddTask(map);
     }
 
+    //根据点击日期加载tasks
     @Override
     public void loadTasks(final String clickTime) {
         mTasksRepository.getAllTasks(new TasksDataSource.GetTasksCallBack() {
@@ -59,7 +59,6 @@ public class CalendarPresenter implements CalendarContract.Presenter {
                 try{
                     java.util.List<Task> taskList = new ArrayList<>();
                     for (Task task : tasks){
-
                         if(task.getStartTime() != null && task.getEndTime() != null && !task.getStartTime().equals("null") && !task.getEndTime().equals("null")) {   //如果有开始日期和结束日期就把这两个日期中的所有日期添加红点
                             Date start = simpleDateFormat.parse(task.getStartTime());
                             Date end = simpleDateFormat.parse(task.getEndTime());
@@ -79,7 +78,11 @@ public class CalendarPresenter implements CalendarContract.Presenter {
                            }
                         }
                     }
-                    mCalendarView.showAllTasks(taskList);
+                    if(taskList.size() == 0) {
+                        mCalendarView.showNoTasks();
+                    }else {
+                        mCalendarView.showAllTasks(taskList);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -87,7 +90,8 @@ public class CalendarPresenter implements CalendarContract.Presenter {
 
             @Override
             public void onTasksFail(String message) {
-
+                Log.d(TAG, "onTasksFail: ");
+                mCalendarView.showNoTasks();
             }
         });
 //        mTasksRepository.getTasksByStartDate(mUserId, clickTime, new TasksDataSource.GetTasksCallBack() {
@@ -172,36 +176,33 @@ public class CalendarPresenter implements CalendarContract.Presenter {
     }
 
     @Override
-    public void addDecorator() {
+    public void startVoiceService(String result) {
+        mCalendarView.startVoiceService(result);
+    }
+
+    @Override
+    public void setSchemeDate() {
         mTasksRepository.getAllTasks(new TasksDataSource.GetTasksCallBack() {
             @Override
             public void onTasksLoaded(java.util.List<Task> tasks, String message) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Collection<CalendarDay> dates = new ArrayList<>();
+
+                Map<String, com.haibin.calendarview.Calendar> map = new HashMap<>();
                 try{
                     for (Task task : tasks){
-                        Log.d(TAG, "onTasksLoaded: start time : " + task.getStartTime());
                         boolean startTimeNotEmpty =  task.getStartTime() != null && !task.getStartTime().equals("null") && !task.getStartTime().equals("");
-                        boolean endTimeNotEmpty = task.getEndTime() != null &&  !task.getEndTime().equals("null") && !task.getEndTime().equals("");
-                        if( startTimeNotEmpty && endTimeNotEmpty) {   //如果有开始日期和结束日期就把这两个日期中的所有日期添加红点
+                        if(startTimeNotEmpty) {   //如果有开始日期不为空，则日期添加标记
                             Date start = simpleDateFormat.parse(task.getStartTime());
-                            Date end = simpleDateFormat.parse(task.getEndTime());
-                            while (start.before(end)){
-                                dates.add(new CalendarDay(start));
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTime(start);
-                                cal.add(Calendar.DATE,1);
-                                start = cal.getTime();
-                            }
-                        }
-                        if(startTimeNotEmpty) {
-                            dates.add(new CalendarDay(simpleDateFormat.parse(task.getStartTime())));
-                        }
-                        if(endTimeNotEmpty) {
-                            dates.add(new CalendarDay(simpleDateFormat.parse(task.getEndTime())));
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(start);
+                            int year = calendar.get(Calendar.YEAR);
+                            int month = calendar.get(Calendar.MONTH) + 1;
+                            int date = calendar.get(Calendar.DATE);
+                            map.put(getSchemeCalendar(year, month, date).toString(),
+                                    getSchemeCalendar(year, month, date));
                         }
                     }
-                    mCalendarView.addDecorator(dates);
+                    mCalendarView.setSchemeDate(map);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -214,8 +215,13 @@ public class CalendarPresenter implements CalendarContract.Presenter {
         });
     }
 
-    @Override
-    public void startVoiceService(String result) {
-        mCalendarView.startVoiceService(result);
+    public com.haibin.calendarview.Calendar getSchemeCalendar(int year, int month, int day) {
+        com.haibin.calendarview.Calendar calendar = new com.haibin.calendarview.Calendar();
+        calendar.setYear(year);
+        calendar.setMonth(month);
+        calendar.setDay(day);
+//        calendar.setSchemeColor(0xFF40db25);//如果单独标记颜色、则会使用这个颜色
+        calendar.setScheme("假");
+        return calendar;
     }
 }

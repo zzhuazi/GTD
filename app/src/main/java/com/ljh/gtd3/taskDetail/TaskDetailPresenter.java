@@ -164,4 +164,9 @@ public class TaskDetailPresenter implements TaskDetailContract.Presenter {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void replaceTask(Task task) {
+        mTask = task;
+    }
 }

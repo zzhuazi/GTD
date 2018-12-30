@@ -35,7 +35,7 @@ public class AllListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
 
-        
+
         // Set up the toolbar_add_task.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

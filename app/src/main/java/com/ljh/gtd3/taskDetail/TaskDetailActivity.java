@@ -9,10 +9,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.ljh.gtd3.R;
 import com.ljh.gtd3.addList.AddListActivity;
 import com.ljh.gtd3.allList.AllListActivity;
@@ -30,9 +32,11 @@ import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 
 public class TaskDetailActivity extends AppCompatActivity {
+    public static final String TAG = TaskDetailActivity.class.getSimpleName();
     private TaskDetailPresenter mTaskDetailPresenter;
     private DrawerLayout mDrawerLayout;
     private TextView mListNameTv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +55,11 @@ public class TaskDetailActivity extends AppCompatActivity {
         }
 
         //Fragment
-        TaskDetailFragment taskDetailFragment = (TaskDetailFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if(taskDetailFragment == null) {
-            taskDetailFragment = TaskDetailFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), taskDetailFragment, R.id.contentFrame);
+        TaskDetailFragment mTaskDetailFragment;
+        mTaskDetailFragment = (TaskDetailFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        if(mTaskDetailFragment == null) {
+            mTaskDetailFragment = TaskDetailFragment.newInstance();
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), mTaskDetailFragment, R.id.contentFrame);
         }
 
         AppExecutors appExecutors = new AppExecutors();
@@ -65,7 +70,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                 ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors)),
                 TasksRepository.getInstance(TasksLocalDataSource.getInstance(appExecutors)),
                 SonTasksRepository.getInstance(SonTasksLocalDataSource.getInstance(appExecutors)),
-                taskDetailFragment, task);
+                mTaskDetailFragment, task);
 
         //清单名点击事件
         mListNameTv = findViewById(R.id.tv_add_task_list_name);
@@ -76,6 +81,18 @@ public class TaskDetailActivity extends AppCompatActivity {
                 mTaskDetailPresenter.showLists();
             }
         });
+    }
+
+    //通知栏多个任务点击时，修改task的内容
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle bundle = intent.getExtras();
+        String taskString = (String) bundle.get("TASK");
+        Task task = new Gson().fromJson(taskString, Task.class);
+        Log.d(TAG, "onNewIntent: task.id = " + task.getId() );
+        mTaskDetailPresenter.replaceTask(task);
+        mTaskDetailPresenter.start();
     }
 
     @Override
