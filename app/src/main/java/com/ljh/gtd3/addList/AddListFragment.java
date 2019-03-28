@@ -101,13 +101,13 @@ public class AddListFragment extends Fragment implements AddListContract.View {
     private void priorityBackgroupSelector(int i) {
         switch (i) {
             case 1:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorBule));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_blue_24dp);
                 break;
             case 2:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorYellow));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_yellow_24dp);
                 break;
             case 3:
-                mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                mPriorityIv.setImageResource(R.drawable.ic_priority_high_red_24dp);
                 break;
         }
     }

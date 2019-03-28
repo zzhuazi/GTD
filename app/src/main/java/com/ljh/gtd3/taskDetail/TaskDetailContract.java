@@ -15,7 +15,7 @@ public interface TaskDetailContract {
         void showTask(Task task, List list); //显示任务信息
         void showLists(java.util.List<List> lists);  //选中清单名时，弹出对话框
         void showStartTime(); //选中开始时间时，弹出对话框，并将时间显示
-        void showEndTime(); //选中结束时间时，弹出对话框，并将时间显示
+//        void showEndTime(); //选中结束时间时，弹出对话框，并将时间显示
         void showPriority(); //选中优先级时，弹出对话框，并设计优先级图标背景颜色
         void showAllSonTask(java.util.List<SonTask> sonTasks); //显示事务
         void showToast(String message);

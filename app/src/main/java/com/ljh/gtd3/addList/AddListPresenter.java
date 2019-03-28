@@ -18,19 +18,19 @@ public class AddListPresenter implements AddListContract.Presenter {
 
     private final AddListContract.View mAddListView;
 
-    private Integer mListId;
+    private List mList;
 
-    public AddListPresenter(ListsRepository mListsRepository, AddListContract.View mAddListView, int mListId) {
+    public AddListPresenter(ListsRepository mListsRepository, AddListContract.View mAddListView, List mList) {
         this.mListsRepository = mListsRepository;
         this.mAddListView = mAddListView;
-        this.mListId = mListId;
+        this.mList = mList;
         mAddListView.setPresenter(this);
     }
 
     @Override
     public void start() {
-        if (mListId != null) {
-            mListsRepository.GetList(mListId, new ListsDataSource.GetListCallBack() {
+        if (mList != null) {
+            mListsRepository.GetList(mList.getId(), new ListsDataSource.GetListCallBack() {
                 @Override
                 public void onListLoaded(final List list, String message) {
                     mAddListView.showList(list);

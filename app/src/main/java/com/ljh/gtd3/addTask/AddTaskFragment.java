@@ -89,7 +89,7 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
             mNameEt.setText(TaskName);
         }
         mStartTimeTv = root.findViewById(R.id.tv_add_task_start_time);
-        mEndTimeTv = root.findViewById(R.id.tv_add_task_end_time);
+//        mEndTimeTv = root.findViewById(R.id.tv_add_task_end_time);
         mPriorityIv = root.findViewById(R.id.iv_add_task_priority);
         mIntroduceEt = root.findViewById(R.id.et_add_task_introduce);
 
@@ -160,12 +160,12 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                 }
             });
             //选择材料结束时间
-            mEndTimeTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showEndTime();
-                }
-            });
+//            mEndTimeTv.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    showEndTime();
+//                }
+//            });
             //设置材料优先级
             mPriorityIv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -248,16 +248,16 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
         }
     }
 
-    @Override
-    public void showEndTime() {
-        try{
-            Intent intent = new Intent(getContext(), TaskDateActivity.class);
-            intent.putExtra("END_DATE", mEndTimeTv.getTag().toString());
-            startActivityForResult(intent, 2);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void showEndTime() {
+//        try{
+//            Intent intent = new Intent(getContext(), TaskDateActivity.class);
+//            intent.putExtra("END_DATE", mEndTimeTv.getTag().toString());
+//            startActivityForResult(intent, 2);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -270,15 +270,6 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                 } else if (resultCode == RESULT_CANCELED) {
                     mStartTimeTv.setTag("null");
                     mStartTimeTv.setText("开始时间");
-                }
-                break;
-            case 2:
-                if (resultCode == RESULT_OK) {
-                    mEndTimeTv.setTag(data.getStringExtra("DATE"));
-                    mEndTimeTv.setText(mEndTimeTv.getTag().toString());
-                } else if (resultCode == RESULT_CANCELED) {
-                    mEndTimeTv.setTag("null");
-                    mEndTimeTv.setText("结束时间");
                 }
                 break;
         }
@@ -295,13 +286,13 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                 mPriority = i;
                 switch (i) {
                     case 1:
-                        mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorBule));
+                        mPriorityIv.setImageResource(R.drawable.ic_priority_high_blue_24dp);
                         break;
                     case 2:
-                        mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorYellow));
+                        mPriorityIv.setImageResource(R.drawable.ic_priority_high_yellow_24dp);
                         break;
                     case 3:
-                        mPriorityIv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        mPriorityIv.setImageResource(R.drawable.ic_priority_high_red_24dp);
                         break;
                 }
             }
@@ -425,15 +416,15 @@ public class AddTaskFragment extends Fragment implements AddTaskContract.View {
                         return;
                     }
                 }
-                if (!mEndTimeTv.getTag().equals("null") ) {
-                    if( DateUtil.isRightDateStr(mEndTimeTv.getTag().toString())) {
-                        Date endTime = simpleDateFormat.parse((String) mEndTimeTv.getTag());
-                        task.setEndTime(simpleDateFormat.format(endTime));
-                    }else {
-                        showToast("结束日期格式错误，添加材料失败");
-                        return;
-                    }
-                }
+//                if (!mEndTimeTv.getTag().equals("null") ) {
+//                    if( DateUtil.isRightDateStr(mEndTimeTv.getTag().toString())) {
+//                        Date endTime = simpleDateFormat.parse((String) mEndTimeTv.getTag());
+//                        task.setEndTime(simpleDateFormat.format(endTime));
+//                    }else {
+//                        showToast("结束日期格式错误，添加材料失败");
+//                        return;
+//                    }
+//                }
                 mPresenter.addTask(task);
 
                 //添加SonTasks

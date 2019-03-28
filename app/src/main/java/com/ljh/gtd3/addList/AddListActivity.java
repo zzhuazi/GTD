@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,6 +21,7 @@ import com.ljh.gtd3.allTask.AllTasksActivity;
 import com.ljh.gtd3.calendar.CalendarActivity;
 import com.ljh.gtd3.data.ListsSource.ListsLocalDataSource;
 import com.ljh.gtd3.data.ListsSource.ListsRepository;
+import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.util.ActivityUtils;
 import com.ljh.gtd3.util.AppExecutors;
 import com.ljh.gtd3.util.MyApplication;
@@ -58,12 +60,13 @@ public class AddListActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), addListFragment, R.id.contentFrame);
         }
 
-        Integer listid = getIntent().getIntExtra("LISTID", 0);
+        List list = getIntent().getParcelableExtra("LIST");
+//        Integer listid = getIntent().getIntExtra("LISTID", 0);
         AppExecutors appExecutors = new AppExecutors();
         //presenter
         mAddListPresenter = new AddListPresenter(
                 ListsRepository.getInstance(ListsLocalDataSource.getInstance(appExecutors)),
-                addListFragment, listid);
+                addListFragment, list);
     }
 
     @Override

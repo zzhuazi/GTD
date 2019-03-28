@@ -32,23 +32,6 @@
                 android:tag="null"
                 android:text="开始日期" />
 
-            <TextView
-                android:id="@+id/tv_add_task_center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/tv_add_task_start_time"
-                android:gravity="center_vertical"
-                android:text=" || " />
-
-            <TextView
-                android:id="@+id/tv_add_task_end_time"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toRightOf="@id/tv_add_task_center"
-                android:gravity="center_vertical"
-                android:tag="null"
-                android:text="结束日期" />
-
             <ImageView
                 android:id="@+id/iv_add_task_priority"
                 android:layout_width="32dp"

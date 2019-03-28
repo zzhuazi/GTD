@@ -64,7 +64,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.mTaskStartTimeTv.setText(" ");
         }
         if (task.getFinished()) {
-            holder.mRelativeLayout.setBackgroundDrawable(holder.view.getResources().getDrawable(R.drawable.list_completed_touch_feedback));
+            holder.mRelativeLayout.setBackgroundDrawable(holder.view.getResources().getColor(R.drawable.list_completed_touch_feedback));
         } else {
             holder.mRelativeLayout.setBackgroundDrawable(holder.view.getResources().getDrawable(R.drawable.touch_feedback));
         }

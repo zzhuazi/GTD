@@ -21,13 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ljh.gtd3.R;
 import com.ljh.gtd3.addTask.SonTaskAdapter;
 import com.ljh.gtd3.allTask.AllTasksActivity;
+import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.data.entity.SonTask;
 import com.ljh.gtd3.data.entity.Task;
 import com.ljh.gtd3.service.NotifyService;
-import com.ljh.gtd3.R;
-import com.ljh.gtd3.data.entity.List;
 import com.ljh.gtd3.taskDate.TaskDateActivity;
 
 import java.text.SimpleDateFormat;
@@ -73,7 +73,7 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
         mListNameTv = getActivity().findViewById(R.id.tv_add_task_list_name);
         mNameEt = root.findViewById(R.id.et_add_task_name);
         mStartTimeTv = root.findViewById(R.id.tv_add_task_start_time);
-        mEndTimeTv = root.findViewById(R.id.tv_add_task_end_time);
+//        mEndTimeTv = root.findViewById(R.id.tv_add_task_end_time);
         mPriorityIv = root.findViewById(R.id.iv_add_task_priority);
         mIntroduceEt = root.findViewById(R.id.et_add_task_introduce);
         mSonTasksRv = root.findViewById(R.id.rv_add_task_sonTasks);
@@ -103,13 +103,13 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
                 showStartTime();
             }
         });
-        //选择材料结束时间
-        mEndTimeTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showEndTime();
-            }
-        });
+//        //选择材料结束时间
+//        mEndTimeTv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showEndTime();
+//            }
+//        });
         //设置材料优先级
         mPriorityIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,16 +148,16 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
                             mStartTimeTv.setText(task.getStartTime());
                         }
                     }
-                    if (task.getEndTime() != null) {
-                        if (!task.getEndTime().isEmpty()) {
-                            if (!task.getEndTime().equals("null")) {
-                                mEndTimeTv.setText(task.getEndTime());
-                                mEndTimeTv.setTag(task.getEndTime());
-                            }
-                        } else {
-                            mEndTimeTv.setText(task.getEndTime());
-                        }
-                    }
+//                    if (task.getEndTime() != null) {
+//                        if (!task.getEndTime().isEmpty()) {
+//                            if (!task.getEndTime().equals("null")) {
+//                                mEndTimeTv.setText(task.getEndTime());
+//                                mEndTimeTv.setTag(task.getEndTime());
+//                            }
+//                        } else {
+//                            mEndTimeTv.setText(task.getEndTime());
+//                        }
+//                    }
                     if (task.getIntroduce() != null) {
                         mIntroduceEt.setText(task.getIntroduce());
                     }
@@ -192,7 +192,7 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
                         @Override
                         public void run() {
                             mListNameTv.setText(strings[i]);
-                            mListNameTv.setTag(R.id.tag_listId, lists.get(i + 1).getId());
+                            mListNameTv.setTag(R.id.tag_listId, lists.get(i).getId());
                             dialogInterface.dismiss();
                         }
                     });
@@ -237,16 +237,16 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
         }
     }
 
-    @Override
-    public void showEndTime() {
-        try {
-            Intent intent = new Intent(getContext(), TaskDateActivity.class);
-            intent.putExtra("DATE", mEndTimeTv.getTag().toString());
-            startActivityForResult(intent, 2);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void showEndTime() {
+//        try {
+//            Intent intent = new Intent(getContext(), TaskDateActivity.class);
+//            intent.putExtra("DATE", mEndTimeTv.getTag().toString());
+//            startActivityForResult(intent, 2);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
